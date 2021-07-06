@@ -10,7 +10,7 @@ class LPSINS : public SINS
 {
 public:
 	LPSINS();
-    LPSINS(const V3d& att, const V3d& vel, const V3d& pos);
+    LPSINS(const V3d& att, const V3d& vel, const V3d& pos, std::shared_ptr<IMUdata> pimu);
     ~LPSINS(){}
     virtual void Update(const IMUdata& imu);
     virtual void UpdateAttitude(const V3d& gyro);

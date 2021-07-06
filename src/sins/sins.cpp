@@ -14,7 +14,7 @@ SINS::SINS():
     q_.setIdentity();
 }
 
-SINS::SINS(const V3d& att, const V3d& vel, const V3d& pos):
+SINS::SINS(const V3d& att, const V3d& vel, const V3d& pos, std::shared_ptr<IMUdata> pimu):
     attitude_(att),
     velocity_(vel),
     last_velocity_(vel),
@@ -23,6 +23,7 @@ SINS::SINS(const V3d& att, const V3d& vel, const V3d& pos):
     last_update_time_(0),
     dt_(0)
 {
+    pimu_ = pimu;
     Eigen::AngleAxisd yawAngle(att(2),V3d::UnitZ());
     Eigen::AngleAxisd pitchAngle(att(0),V3d::UnitX());
     Eigen::AngleAxisd rollAngle(att(1),V3d::UnitY());
@@ -45,5 +46,8 @@ const M3d& SINS::GetRotationMatrix() const {
     return std::move(q_.toRotationMatrix());
 }
 
+std::shared_ptr<IMUdata> SINS::GetIMUdata() const{
+    return pimu_;
+}
 
 } //namespace sins
