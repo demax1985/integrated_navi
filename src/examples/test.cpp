@@ -9,6 +9,7 @@ int main(int argc, char **argv)
     lpsins.ShowAtt();
     lpsins.ShowVel();
     lpsins.ShowPos();
+
 //	ros::spin();
 	return 0;
 }
