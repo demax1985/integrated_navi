@@ -7,18 +7,12 @@
 #include <Eigen/Geometry>
 #include "sensors/imu.h"
 #include "common/global.h"
+#include "earth.h"
 namespace sins{
 
 using V3d = Eigen::Vector3d;
 using M3d = Eigen::Matrix3d;
 
-typedef struct{
-    double Re,e2,g0,g,wie;
-    V3d pos,vn;
-    V3d wnie,wnen,wnin,wnien,gn,gcc;
-    double sl,cl,tl,sl2,sl4;
-    double RNh,RMh,clRNh;
-}EARTH;
 class SINS
 {
 public:
@@ -35,7 +29,6 @@ public:
     const M3d& GetRotationMatrix() const;
     std::shared_ptr<IMUdata> GetIMUdata() const;
 
-    void EarthUpdate(const V3d& pos, const V3d& vn);
 protected:
     V3d attitude_; //pitch roll yaw
     V3d velocity_, last_velocity_;
@@ -45,7 +38,7 @@ protected:
     std::shared_ptr<IMUdata> pimu_;
 
     int nn_; // number of sub samples
-    EARTH eth;
+    Earth eth;
 
 };
 } // namespace sins

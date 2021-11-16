@@ -50,26 +50,4 @@ std::shared_ptr<IMUdata> SINS::GetIMUdata() const{
     return pimu_;
 }
 
-void SINS::EarthUpdate(const V3d& pos, const V3d& vn){
-    eth.pos = pos;
-    eth.vn = vn;
-    eth.sl = sin(pos(0)); eth.cl = cos(pos(0)); eth.tl = eth.sl/eth.cl;
-    eth.sl2 = eth.sl*eth.sl; eth.sl4 = eth.sl2*eth.sl2;
-    double sq = 1-eth.e2*eth.sl2; 
-    double RN = eth.Re/sqrt(sq);
-    eth.RNh = RN + pos(2); eth.clRNh = eth.cl*eth.RNh;
-    eth.RMh = RN*(1-eth.e2)/sq + pos(2);
-
-    eth.wnie(1) = eth.wie*eth.cl; eth.wnie(2) = eth.wie*eth.sl;
-
-    eth.wnen(0) = -vn(1)/eth.RMh; eth.wnen(1) = vn(0)/eth.RNh; eth.wnen(2) = eth.wnen(1)*eth.tl;
-
-    eth.wnin = eth.wnie = eth.wnen;
-    eth.wnien = eth.wnie + eth.wnin;
-    eth.g = eth.g0*(1+5.27094e-3*eth.sl2+2.32718e-5*eth.sl4)-3.086e-6*pos(2);
-    eth.gn(2) = -eth.g;
-
-    eth.gcc = eth.gn - eth.wnien.cross(eth.vn);
-}
-
 } //namespace sins
