@@ -10,17 +10,17 @@ class LPSINS : public SINS
 {
 public:
 	LPSINS();
-    LPSINS(const V3d& att, const V3d& vel, const V3d& pos, std::shared_ptr<IMUdata> pimu);
+    LPSINS(const V3d& att, const V3d& vel, const V3d& pos);
     ~LPSINS(){}
-    virtual void Update(const IMUdata& imu);
-    virtual void UpdateAttitude(const V3d& gyro);
-    virtual void UpdateVelocity(const V3d& acce);
+    virtual void Update();
+    virtual void UpdateAttitude();
+    virtual void UpdateVelocity();
     virtual void UpdatePosition();
 
-    void ShowAtt() const {cout<<"euler angle is: "<<attitude_<<endl;
+    void ShowAtt() const {cout<<"euler angle is: "<<att_<<endl;
                           cout<<" quaternion is: "<<q_.w()<<" "<<q_.x()<<" "<<q_.y()<<" "<<q_.z()<<endl;}
-    void ShowVel() const {cout<<"velocity is: "<<velocity_<<endl;}
-    void ShowPos() const {cout<<"position is: "<<position_<<endl;}
+    void ShowVel() const {cout<<"velocity is: "<<vn_<<endl;}
+    void ShowPos() const {cout<<"position is: "<<pos_<<endl;}
 private:
     V3d gn;
 };

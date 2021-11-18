@@ -9,8 +9,8 @@ LPSINS::LPSINS():SINS()
 	std::cout<<"LPSINS construct!"<<std::endl;
 }
 
-LPSINS::LPSINS(const V3d &att, const V3d &vel, const V3d &pos, std::shared_ptr<IMUdata> pimu):
-    SINS(att,vel,pos,pimu)
+LPSINS::LPSINS(const V3d &att, const V3d &vel, const V3d &pos):
+    SINS(att,vel,pos)
 {
     gn = V3d(0,0,-9.8017);
 }

@@ -136,13 +136,22 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 
-aux_source_directory(src/examples SOURCE_EXAMPLE)
-aux_source_directory(src/filter SOURCE_FILTER)
-aux_source_directory(src/sensors SOURCE_SENSORS)
-aux_source_directory(src/sins SOURCE_SINS)
-add_executable(test_node ${SOURCE_EXAMPLE} ${SOURCE_FILTER} ${SOURCE_SENSORS} ${SOURCE_SINS})
+set(SOURCE_LIST
+   src/examples/test.cpp
+   src/sensors/imu.cpp
+   src/sins/earth.cpp
+   src/sins/hpsins.cpp
+   src/sins/sins.cpp)
+
+# aux_source_directory(src/examples SOURCE_EXAMPLE)
+# aux_source_directory(src/filter SOURCE_FILTER)
+# aux_source_directory(src/sensors SOURCE_SENSORS)
+# aux_source_directory(src/sins SOURCE_SINS)
+# add_executable(test_node ${SOURCE_EXAMPLE} ${SOURCE_FILTER} ${SOURCE_SENSORS} ${SOURCE_SINS})
 # add_executable(test_node src/examples/test.cpp src/sins/lpsins.cpp src/sensors/imu.cpp src/filter/filter_base.cpp
 #                          src/filter/KF15.cpp src/sins/sins.cpp src/sins/earth.cpp)
+
+add_executable(test_node ${SOURCE_LIST})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

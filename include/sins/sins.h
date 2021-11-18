@@ -1,6 +1,7 @@
 #ifndef SINS_H_
 #define SINS_H_
 
+#include <memory>
 #include <sensor_msgs/Imu.h>
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -17,29 +18,25 @@ class SINS
 {
 public:
     SINS();
-    SINS(const V3d& att, const V3d& vel, const V3d& pos, std::shared_ptr<IMUdata> pimu);
+    SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts);
 	virtual ~SINS(){}
-    virtual void Update(const IMUdata& imu) = 0;
-    virtual void UpdateAttitude(const V3d& gyro) = 0;
-    virtual void UpdateVelocity(const V3d& acce) = 0;
+    virtual void Update(const IMUData& imu) = 0;
+    virtual void UpdateAttitude() = 0;
+    virtual void UpdateVelocity() = 0;
 	virtual void UpdatePosition() = 0;
     const V3d& GetAttitude() const;
     const V3d& GetVelocity() const;
     const V3d& GetPosition() const;
     const M3d& GetRotationMatrix() const;
-    std::shared_ptr<IMUdata> GetIMUdata() const;
 
 protected:
-    V3d attitude_; //pitch roll yaw
-    V3d velocity_, last_velocity_;
-    V3d position_;
-    Eigen::Quaterniond q_;
-    double update_time_, last_update_time_, dt_;
-    std::shared_ptr<IMUdata> pimu_;
-
-    int nn_; // number of sub samples
-    Earth eth;
-
+    V3d att_; //pitch roll yaw
+    V3d vn_, last_vn_;
+    V3d pos_;
+    Eigen::Quaterniond q_,q_prev_;
+    double update_timestamp_, last_update_timestamp_, dt_;
+    double current_imu_timestamp_, prev_imu_timestamp_;
+    double ts_;
 };
 } // namespace sins
 #endif

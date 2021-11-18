@@ -34,6 +34,7 @@ public:
     Earth(/* args */);
     Earth(const V3d& pos, const V3d& vn);
     void EarthUpdate(const V3d& pos, const V3d& vn);
+    const V3d& Wnin() const;
 };
 
 

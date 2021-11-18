@@ -83,3 +83,7 @@ void Earth::EarthUpdate(const V3d& pos, const V3d& vn){
     gn_ = {0.0, 0.0, -g_};
     gcc_ = gn_ - wnien_.cross(vn_);
 }
+
+const V3d& Earth::Wnin() const{
+    return wnin_;
+}

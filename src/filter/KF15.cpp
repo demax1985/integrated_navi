@@ -10,7 +10,7 @@ KF15::KF15(const Eigen::Matrix<double,15,1> &state, const Eigen::Matrix<double,1
 }
 
 void KF15::Predict(double dt){
-    V3d fn = pSINS->GetRotationMatrix()*pSINS->GetIMUdata()->Acce();
+    // V3d fn = pSINS->GetRotationMatrix()*pSINS->GetIMUdata()->Acce();
 }
 
 void KF15::MeasurementUpdate(){
