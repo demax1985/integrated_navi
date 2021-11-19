@@ -87,3 +87,15 @@ void Earth::EarthUpdate(const V3d& pos, const V3d& vn){
 const V3d& Earth::Wnin() const{
     return wnin_;
 }
+
+const V3d& Earth::Gcc() const{
+    return gcc_;
+}
+
+const double Earth::Rmh() const{
+    return rmh_;
+}
+
+const double Earth::ClRnh() const{
+    return cl_rnh_;
+}

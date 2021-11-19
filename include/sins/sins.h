@@ -27,16 +27,16 @@ public:
     const V3d& GetAttitude() const;
     const V3d& GetVelocity() const;
     const V3d& GetPosition() const;
-    const M3d& GetRotationMatrix() const;
+    const M3d GetRotationMatrix() const;
 
 protected:
     V3d att_; //pitch roll yaw
-    V3d vn_, last_vn_;
+    V3d vn_, vn_prev_;
     V3d pos_;
+    V3d an_;
     Eigen::Quaterniond q_,q_prev_;
-    double update_timestamp_, last_update_timestamp_, dt_;
-    double current_imu_timestamp_, prev_imu_timestamp_;
-    double ts_;
+    double update_timestamp_, pre_update_timestamp_, dt_;
+    double current_imu_timestamp_, prev_imu_timestamp_,ts_;
 };
 } // namespace sins
 #endif

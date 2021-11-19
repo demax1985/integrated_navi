@@ -141,7 +141,8 @@ set(SOURCE_LIST
    src/sensors/imu.cpp
    src/sins/earth.cpp
    src/sins/hpsins.cpp
-   src/sins/sins.cpp)
+   src/sins/sins.cpp
+   src/common/global.cpp)
 
 # aux_source_directory(src/examples SOURCE_EXAMPLE)
 # aux_source_directory(src/filter SOURCE_FILTER)

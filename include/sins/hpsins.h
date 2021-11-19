@@ -12,8 +12,12 @@ class HPSINS : public SINS
 {
 private:
     int num_samples_; // number of sub samples
-    V3d phim_,prev_phim_;
-    V3d dvbm_,prev_dvbm_;
+    V3d phim_,phim_prev_;
+    V3d dvbm_,dvbm_prev_;
+    V3d wib_,wib_prev_,wib_middle_;
+    V3d fb_,fb_prev_,fb_middle_;
+    V3d pos_middle_,vn_middle_;
+    Eigen::Quaterniond q_middle_;
     std::unique_ptr<Earth> eth_;
     std::vector<IMUData> imus_;
     Eigen::Matrix<double,5,5> cone_scull_coeff_;
@@ -27,6 +31,9 @@ public:
 	virtual void UpdatePosition() override;
 
     void ConeScullCompensation();
+    void UpdatePrevSINS();
+    const V3d Vn2DeltaPos(const V3d& vn, double dt) const;
+    void ComputeWibAndFb();
 
     void ShowAtt() const {cout<<"euler angle is: "<<att_<<endl;
                           cout<<" quaternion is: "<<q_.w()<<" "<<q_.x()<<" "<<q_.y()<<" "<<q_.z()<<endl;}
