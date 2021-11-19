@@ -1,5 +1,5 @@
-#ifndef LPSINS_H_
-#define LPSINS_H_
+#ifndef SINS_LPSINS_H_
+#define SINS_LPSINS_H_
 
 #include "sins.h"
 #include "sensors/imu.h"

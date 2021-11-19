@@ -8,7 +8,8 @@ SINS::SINS():
     dt_(0),
     ts_(0.01),
     current_imu_timestamp_(0.0),
-    prev_imu_timestamp_(0.0)
+    prev_imu_timestamp_(0.0),
+    initialized_(false)
 {
     att_.setZero();
     vn_.setZero();
@@ -29,7 +30,8 @@ SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts):
     dt_(0),
     ts_(ts),
     current_imu_timestamp_(0.0),
-    prev_imu_timestamp_(0.0)
+    prev_imu_timestamp_(0.0),
+    initialized_(false)
 {
     Eigen::AngleAxisd yawAngle(att(2),V3d::UnitZ());
     Eigen::AngleAxisd pitchAngle(att(0),V3d::UnitX());
@@ -55,5 +57,7 @@ const M3d SINS::GetRotationMatrix() const {
     return q_.toRotationMatrix();
 }
 
-
+void SINS::SetInitStatus(bool initialized){
+    initialized_ = initialized;
+}
 } //namespace sins

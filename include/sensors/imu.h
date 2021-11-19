@@ -1,6 +1,6 @@
 
-#ifndef IMU_H_
-#define IMU_H_
+#ifndef SENSORS_IMU_H_
+#define SENSORS_IMU_H_
 
 #include <Eigen/Core>
 #include <Eigen/Dense>

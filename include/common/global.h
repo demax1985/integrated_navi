@@ -1,5 +1,5 @@
-#ifndef GLOBAL_H_
-#define GLOBAL_H_
+#ifndef COMMON_GLOBAL_H_
+#define COMMON_GLOBAL_H_
 
 #include <cmath>
 #include <Eigen/Core>

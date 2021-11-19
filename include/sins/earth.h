@@ -38,6 +38,8 @@ public:
     const V3d& Gcc() const;
     const double Rmh() const;
     const double ClRnh() const;
+    const double Tl() const;
+    const double Cl() const;
 };
 
 

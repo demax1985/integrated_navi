@@ -66,6 +66,9 @@ void HPSINS::Update(const IMUData& imu){
         dt_ = update_timestamp_ - pre_update_timestamp_;
         ConeScullCompensation();
         ComputeWibAndFb();
+        V3d extrapolated_pos,extrapolated_vn;
+        std::tie(extrapolated_pos,extrapolated_vn) = ExtrapolatePosAndVn(dt_/2.0);
+        eth_->EarthUpdate(extrapolated_pos,extrapolated_vn);
         UpdateAttitude();
         UpdateVelocity();
         UpdatePosition();
@@ -99,6 +102,7 @@ void HPSINS::UpdatePosition(){
     pos_ += Vn2DeltaPos(vn_middle_,dt_);
 }
 
+//TODO ts_ is not correct,should be the time interval between two consecutive imu data
 void HPSINS::ConeScullCompensation(){
     if(imus_.size() < num_samples_)
         return;
@@ -140,6 +144,10 @@ void HPSINS::ComputeWibAndFb(){
     fb_middle_ = (fb_prev_ + fb_)/2.0;
 }
 
-
+std::tuple<V3d,V3d> HPSINS::ExtrapolatePosAndVn(double dt){
+    V3d extrapolated_vn = vn_ + an_*dt;
+    V3d extrapolated_pos = pos_ + Vn2DeltaPos(vn_,dt);
+    return std::make_tuple(extrapolated_pos,extrapolated_vn);
+}
 
 } // namespace sins

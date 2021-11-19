@@ -142,7 +142,9 @@ set(SOURCE_LIST
    src/sins/earth.cpp
    src/sins/hpsins.cpp
    src/sins/sins.cpp
-   src/common/global.cpp)
+   src/common/global.cpp
+   src/filter/filter_base.cpp
+   src/filter/kf15.cpp)
 
 # aux_source_directory(src/examples SOURCE_EXAMPLE)
 # aux_source_directory(src/filter SOURCE_FILTER)

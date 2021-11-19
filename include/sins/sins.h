@@ -1,5 +1,5 @@
-#ifndef SINS_H_
-#define SINS_H_
+#ifndef SINS_SINS_H_
+#define SINS_SINS_H_
 
 #include <memory>
 #include <sensor_msgs/Imu.h>
@@ -24,12 +24,16 @@ public:
     virtual void UpdateAttitude() = 0;
     virtual void UpdateVelocity() = 0;
 	virtual void UpdatePosition() = 0;
+
     const V3d& GetAttitude() const;
     const V3d& GetVelocity() const;
     const V3d& GetPosition() const;
     const M3d GetRotationMatrix() const;
 
+    void SetInitStatus(bool initialized);
+
 protected:
+    bool initialized_;
     V3d att_; //pitch roll yaw
     V3d vn_, vn_prev_;
     V3d pos_;

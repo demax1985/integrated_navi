@@ -99,3 +99,11 @@ const double Earth::Rmh() const{
 const double Earth::ClRnh() const{
     return cl_rnh_;
 }
+
+const double Earth::Tl() const{
+    return tl_;
+}
+
+const double Earth::Cl() const{
+    return cl_;
+}

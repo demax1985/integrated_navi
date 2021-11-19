@@ -3,6 +3,7 @@
 
 #include "sins/sins.h"
 #include <memory>
+#include <tuple>
 namespace sins{
 
 using std::cout;
@@ -34,6 +35,7 @@ public:
     void UpdatePrevSINS();
     const V3d Vn2DeltaPos(const V3d& vn, double dt) const;
     void ComputeWibAndFb();
+    std::tuple<V3d,V3d> ExtrapolatePosAndVn(double dt);
 
     void ShowAtt() const {cout<<"euler angle is: "<<att_<<endl;
                           cout<<" quaternion is: "<<q_.w()<<" "<<q_.x()<<" "<<q_.y()<<" "<<q_.z()<<endl;}
