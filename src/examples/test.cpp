@@ -2,6 +2,8 @@
 #include <ros/ros.h>
 #include <unsupported/Eigen/MatrixFunctions>
 
+#include "filter/kf15.h"
+
 using namespace sins;
 
 std::tuple<V3d,V3d> SetV3dTuple(){
@@ -48,6 +50,61 @@ int main(int argc, char **argv)
     mat1.setZero();
     mat1.block<4,4>(1,2) = dia4;
     std::cout<<"diag matrix is: "<<mat1<<std::endl;
+
+    //test symmetric positive
+    Eigen::Matrix3d Pk_;
+    Pk_<<-1,0.1,-0.3,0.2,2,0.1,0.2,0.3,3;
+    std::cout<<"before,Pk is: "<<std::endl<<Pk_<<std::endl;
+    for(int i = 0; i < Pk_.rows(); i++)
+    for(int j = 0; j < Pk_.cols(); j++){
+        if(Pk_(i,j) < 0){
+            Pk_(i,j) = -Pk_(i,j);
+        }
+    }
+    Eigen::Matrix3d P1 = (Pk_+Pk_.transpose())/2;
+    // std::cout<<"after Pk is: "<<std::endl<<(Pk_+Pk_.transpose())/2<<std::endl;
+    std::cout<<"after Pk is: "<<std::endl<<P1<<std::endl;
+    // std::cout<<"positive Pk is: "<<std::endl<<Pk_<<std::endl;
+    // Eigen::Matrix3d pk_t = Pk_.transpose();
+    // std::cout<<"transpose of Pk is: "<<std::endl<<pk_t<<std::endl;
+    // Eigen::Matrix3d p3 = Pk_ + pk_t;
+    // std::cout<<" Pk+pk.tranpose is: "<<std::endl<<p3<<std::endl;
+    // Pk_ = 0.5*p3;
+    // std::cout<<"after Pk is: "<<std::endl<<Pk_<<std::endl;
+
+    //test kf15 
+    V3d att = {0.1,0.1,100};
+    V3d vn = {100,100,0};
+    V3d pos = {0.6,2.4,100};
+    double ts = 0.01;
+    double n = 1;
+    double taug = 3600;
+    double taua = 3600;
+    std::shared_ptr<HPSINS> psins(new HPSINS(att,vn,pos,ts,n,taug,taua));
+    Eigen::Matrix<double,15,15> pk;
+    Eigen::Matrix<double,15,15> qt;
+    qt.setZero();
+    Eigen::Matrix<double,15,1> tmppk;
+    tmppk << 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1;
+    pk = tmppk.asDiagonal();
+    Eigen::Matrix<double,15,1> state;
+    state.setZero();
+
+    std::unique_ptr<KF15> pkf15(new KF15(state,pk,qt,psins));
+    Eigen::Matrix<double,3,1> ob = {1,1,1};
+    Eigen::Matrix<double,3,15> Hk;
+    Hk.setZero();
+    Hk(0,3) = 1;Hk(1,4) = 1;Hk(2,5) = 1;
+    Eigen::Matrix3d Rk;
+    Rk.setZero();
+    Rk(0,0) = 0.1;Rk(1,1) = 0.1;Rk(2,2) = 0.1;
+    std::cout<<"Rk is: "<<std::endl<<Rk<<std::endl;
+
+    pkf15->Predict(ts);
+    pkf15->MeasurementUpdate(ob,Hk,Rk);
+    pkf15->MeasurementUpdate(ob,Hk,Rk);
+    pkf15->MeasurementUpdate(ob,Hk,Rk);
+
 //	ros::spin();
 	return 0;
 }

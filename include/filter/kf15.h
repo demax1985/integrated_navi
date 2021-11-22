@@ -21,7 +21,8 @@ public:
          std::shared_ptr<SINS> sins);
     virtual void SetFk(double dt) override;
     virtual void Predict(double dt) override;
-    virtual void MeasurementUpdate(const Eigen::VectorXd Zk, const Eigen::MatrixXd Hk) override;
+    virtual void MeasurementUpdate(const Eigen::VectorXd Zk, const Eigen::MatrixXd Hk, const Eigen::MatrixXd Rk) override;
+    virtual void SetPkPositiveSymmetric() override;
 private:
     std::shared_ptr<SINS> pSINS_;
 };

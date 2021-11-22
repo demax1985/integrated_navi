@@ -5,6 +5,6 @@ FilterBase::FilterBase(const Eigen::VectorXd &state, const Eigen::MatrixXd &P, c
     dt_(0.0){
     state_ = state;
     Pk_ = P;
-    Qk_ = Q;
+    Qt_ = Q;
     Fk_.setZero(0,0);
 }
