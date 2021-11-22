@@ -19,9 +19,9 @@ protected:
     bool converged_;
     double dt_;
     Eigen::VectorXd state_;
-    Eigen::MatrixXd P_;
-    Eigen::MatrixXd Q_;
-    Eigen::MatrixXd F_;
+    Eigen::MatrixXd Pk_;
+    Eigen::MatrixXd Qk_;
+    Eigen::MatrixXd Fk_;
 };
 
 #endif

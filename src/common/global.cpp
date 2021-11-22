@@ -21,3 +21,11 @@ const Eigen::Quaterniond RotationVector2Quaternion(const Eigen::Vector3d v3d){
     }
     return Eigen::Quaterniond(q0,s*v3d(0),s*v3d(1),s*v3d(2));
 }
+
+const Eigen::Matrix3d V3d2Skew(const Eigen::Vector3d& vec){
+    Eigen::Matrix3d tmp;
+    tmp << 0.0, -vec(2), vec(1),
+           vec(2), 0.0, -vec(0),
+           -vec(1), vec(0), 0.0;
+    return tmp;
+}

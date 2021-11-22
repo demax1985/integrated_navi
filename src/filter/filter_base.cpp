@@ -4,7 +4,7 @@ FilterBase::FilterBase(const Eigen::VectorXd &state, const Eigen::MatrixXd &P, c
     converged_(false),
     dt_(0.0){
     state_ = state;
-    P_ = P;
-    Q_ = Q;
-    F_.setZero(0,0);
+    Pk_ = P;
+    Qk_ = Q;
+    Fk_.setZero(0,0);
 }

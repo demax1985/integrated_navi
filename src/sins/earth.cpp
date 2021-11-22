@@ -88,12 +88,24 @@ const V3d& Earth::Wnin() const{
     return wnin_;
 }
 
+const V3d& Earth::Wnie() const{
+    return wnie_;
+}
+
+const V3d& Earth::Wnien() const{
+    return wnien_;
+}
+
 const V3d& Earth::Gcc() const{
     return gcc_;
 }
 
 const double Earth::Rmh() const{
     return rmh_;
+}
+
+const double Earth::Rnh() const{
+    return rnh_;
 }
 
 const double Earth::ClRnh() const{
@@ -104,6 +116,14 @@ const double Earth::Tl() const{
     return tl_;
 }
 
+const double Earth::Sl() const{
+    return sl_;
+}
+
 const double Earth::Cl() const{
     return cl_;
+}
+
+const double Earth::G0() const{
+    return g0_;
 }

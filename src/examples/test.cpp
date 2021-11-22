@@ -1,5 +1,6 @@
 #include "../../include/sins/hpsins.h"
 #include <ros/ros.h>
+#include <unsupported/Eigen/MatrixFunctions>
 
 using namespace sins;
 
@@ -30,6 +31,23 @@ int main(int argc, char **argv)
     std::tie(a1,a2) = SetV3dTuple();
     std::cout<<"a1 is: "<<a1<<std::endl;
     std::cout<<"a2 is: "<<a2<<std::endl;
+
+    //test exp
+    Eigen::MatrixXd Ft(3,3);
+    Ft<<0.2,0,0,0,0.3,0,0,0,0.4;
+    std::cout<<"Ft is: "<<Ft<<std::endl;
+    std::cout<<"exp of Ft is: "<<Ft.exp()<<std::endl;
+
+    std::cout<<"exp of scaler 0.5 is: "<<exp(0.5)<<std::endl;
+    //test diagnoal
+    Eigen::Matrix<double,4,1> vec_4;
+    vec_4 << 1,2,3,4;
+    Eigen::DiagonalMatrix<double,4> dia4 = vec_4.asDiagonal();
+
+    Eigen::Matrix<double,6,6> mat1;
+    mat1.setZero();
+    mat1.block<4,4>(1,2) = dia4;
+    std::cout<<"diag matrix is: "<<mat1<<std::endl;
 //	ros::spin();
 	return 0;
 }

@@ -18,6 +18,14 @@ SINS::SINS():
     pos_.setZero();
     q_.setIdentity();
     q_prev_.setIdentity();
+    Maa_.setZero();
+    Mav_.setZero();
+    Map_.setZero();
+    Mva_.setZero();
+    Mvv_.setZero();
+    Mvp_.setZero();
+    Mpv_.setZero();
+    Mpp_.setZero();
 }
 
 SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts):
@@ -39,6 +47,14 @@ SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts):
     q_ = rollAngle*pitchAngle*yawAngle;
     q_prev_ = q_;
     an_.setZero();
+    Maa_.setZero();
+    Mav_.setZero();
+    Map_.setZero();
+    Mva_.setZero();
+    Mvv_.setZero();
+    Mvp_.setZero();
+    Mpv_.setZero();
+    Mpp_.setZero();
 }
 
 const V3d& SINS::GetAttitude() const {

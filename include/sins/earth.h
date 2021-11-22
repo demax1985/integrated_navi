@@ -35,11 +35,16 @@ public:
     Earth(const V3d& pos, const V3d& vn);
     void EarthUpdate(const V3d& pos, const V3d& vn);
     const V3d& Wnin() const;
+    const V3d& Wnie() const;
+    const V3d& Wnien() const;
     const V3d& Gcc() const;
     const double Rmh() const;
+    const double Rnh() const;
     const double ClRnh() const;
     const double Tl() const;
+    const double Sl() const;
     const double Cl() const;
+    const double G0() const;
 };
 
 

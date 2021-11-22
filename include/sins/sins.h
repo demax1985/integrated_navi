@@ -25,6 +25,20 @@ public:
     virtual void UpdateVelocity() = 0;
 	virtual void UpdatePosition() = 0;
 
+    virtual void SetErrModelMatrix() = 0;
+
+    virtual const M3d& Maa() const = 0;
+    virtual const M3d& Mav() const = 0;
+    virtual const M3d& Map() const = 0;
+    virtual const M3d& Mva() const = 0;
+    virtual const M3d& Mvv() const = 0;
+    virtual const M3d& Mvp() const = 0;
+    virtual const M3d& Mpv() const = 0;
+    virtual const M3d& Mpp() const = 0;
+
+    virtual const double TauG() const = 0;
+    virtual const double TauA() const = 0;
+
     const V3d& GetAttitude() const;
     const V3d& GetVelocity() const;
     const V3d& GetPosition() const;
@@ -41,6 +55,9 @@ protected:
     Eigen::Quaterniond q_,q_prev_;
     double update_timestamp_, pre_update_timestamp_, dt_;
     double current_imu_timestamp_, prev_imu_timestamp_,ts_;
+
+    // error model coefficient
+    M3d Maa_,Mav_,Map_,Mva_,Mvv_,Mvp_,Mpv_,Mpp_;
 };
 } // namespace sins
 #endif

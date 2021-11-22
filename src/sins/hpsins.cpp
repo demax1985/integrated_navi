@@ -2,7 +2,9 @@
 
 namespace sins{
 
-HPSINS::HPSINS():SINS(){
+HPSINS::HPSINS():SINS(),
+    tauG_(3600.0),
+    tauA_(3600.0){
     imus_.clear();
     eth_ = std::unique_ptr<Earth>(new Earth());
     phim_.setZero();
@@ -25,9 +27,12 @@ HPSINS::HPSINS():SINS(){
                             2315/4620,4558/4620,7296/4620,7834/4620,15797/4620;
 }
 
-HPSINS::HPSINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts, const int num_samples):
+HPSINS::HPSINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts, const int num_samples,
+               double tauG, double tauA):
     SINS(att,vn,pos,ts),
-    num_samples_(num_samples){
+    num_samples_(num_samples),
+    tauG_(tauG),
+    tauA_(tauA){
     eth_ = std::unique_ptr<Earth>(new Earth(pos,vn));
     imus_.clear();
     phim_.setZero();
@@ -83,17 +88,19 @@ void HPSINS::UpdateAttitude(){
     // Eigen::Quaterniond q_n_in(phi_n_in);
     // Eigen::Quaterniond q_b_ib(phi_b_ib);
 
-    Eigen::Quaterniond q_n_in = RotationVector2Quaternion(-eth_->Wnin()*dt_);
+    Eigen::Quaterniond q_n_in = RotationVector2Quaternion(EarthWnin()*dt_);
     Eigen::Quaterniond q_b_ib = RotationVector2Quaternion(wib_middle_*dt_);
     q_ = q_n_in*q_*q_b_ib;
 
-    Eigen::Quaterniond q_n_in_middle = RotationVector2Quaternion(-eth_->Wnin()*dt_/2.0);
+    Eigen::Quaterniond q_n_in_middle = RotationVector2Quaternion(EarthWnin()*dt_/2.0);
     Eigen::Quaterniond q_b_ib_middle = RotationVector2Quaternion(wib_middle_*dt_/2.0);
     q_middle_ = q_n_in_middle*q_*q_b_ib_middle;
+    //TODO check eulerangle rotation sequence
+    att_ = q_.matrix().eulerAngles(2,1,0);
 }
 
 void HPSINS::UpdateVelocity(){
-    an_ = q_middle_*fb_middle_ + eth_->Gcc();
+    an_ = q_middle_*fb_middle_ + EarthGcc();
     vn_ += an_*dt_;
     vn_middle_ = (vn_prev_ + vn_)/2.0;
 }
@@ -134,12 +141,12 @@ void HPSINS::UpdatePrevSINS(){
 }
 
 const V3d HPSINS::Vn2DeltaPos(const V3d& vn, double dt) const{
-    return V3d(vn(1)*dt/eth_->Rmh(), vn(0)*dt/eth_->ClRnh(), vn(2)*dt);
+    return V3d(vn(1)*dt/EarthRmh(), vn(0)*dt/EarthClRnh(), vn(2)*dt);
 }
 
 void HPSINS::ComputeWibAndFb(){
-    wib_ = phim_*dt_;
-    fb_ = dvbm_*dt_;
+    wib_ = phim_/dt_;
+    fb_ = dvbm_/dt_;
     wib_middle_ = (wib_prev_ + wib_)/2.0;
     fb_middle_ = (fb_prev_ + fb_)/2.0;
 }
@@ -148,6 +155,104 @@ std::tuple<V3d,V3d> HPSINS::ExtrapolatePosAndVn(double dt){
     V3d extrapolated_vn = vn_ + an_*dt;
     V3d extrapolated_pos = pos_ + Vn2DeltaPos(vn_,dt);
     return std::make_tuple(extrapolated_pos,extrapolated_vn);
+}
+
+void HPSINS::SetErrModelMatrix(){
+    double tl = EarthTl();
+    double secl = 1.0/EarthCl();
+    double f_Rmh = 1.0/EarthRmh();
+    double f_Rnh = 1.0/EarthRnh();
+    double f_clRnh = 1.0/EarthClRnh();
+    double f_Rmh2 = f_Rmh*f_Rmh;
+    double f_Rnh2 = f_Rnh*f_Rnh;
+    M3d Mp1,Mp2;
+    Mp1.setZero();
+    Mp2.setZero();
+    Mp1(1,0) = -EarthWnie()(2); Mp1(2,0) = EarthWnie()(1);
+    Mp2(0,2) = vn_(1)*f_Rmh2; Mp2(1,2) = -vn_(0)*f_Rnh2;
+    Mp2(2,0) = vn_(0)*f_clRnh*secl; Mp2(2,2) = -vn_(0)*f_Rnh2*tl;
+
+    V3d fn = q_*fb_;
+    double scl = EarthSl()*EarthCl();
+
+    Maa_ = -V3d2Skew(EarthWnin());
+    Mav_(0,1) = -f_Rmh; Mav_(1,0) = f_Rnh; Mav_(2,0) = f_Rnh*tl;
+    Map_ = Mp1 + Mp2;
+    Mva_ = V3d2Skew(fn);
+    Mvv_ = V3d2Skew(vn_)*Mav_ - V3d2Skew(EarthWnien());
+    Mvp_ = V3d2Skew(vn_)*(Mp1 + Map_);
+    Mvp_(2,0) -= EarthG0()*(5.27094e-3*2.0 + 2.32718e-5*4.0*EarthSl()*EarthSl())*scl;
+    Mvp_(2,2) += 3.086e-6;
+    Mpv_(0,1) = f_Rmh; Mpv_(1,0) = f_clRnh; Mpv_(2,2) = 1.0;
+    Mpp_(0,2) = -vn_(1)*f_Rmh2; Mpp_(1,0) = vn_(0)*f_clRnh*tl; Mpp_(1,2) = -vn_(0)*f_Rnh2*secl;
+
+}
+
+const V3d& HPSINS::EarthWnin() const{
+    return eth_->Wnin();
+}
+const V3d& HPSINS::EarthWnie() const{
+    return eth_->Wnie();
+}
+const V3d& HPSINS::EarthWnien() const{
+    return eth_->Wnien();
+}
+const V3d& HPSINS::EarthGcc() const{
+    return eth_->Gcc();
+}
+double HPSINS::EarthRmh() const{
+    return eth_->Rmh();
+}
+double HPSINS::EarthRnh() const{
+    return eth_->Rnh();
+}
+double HPSINS::EarthTl() const{
+    return eth_->Tl();
+}
+double HPSINS::EarthSl() const{
+    return eth_->Sl();
+}
+double HPSINS::EarthCl() const{
+    return eth_->Cl();
+}
+double HPSINS::EarthClRnh() const{
+    return eth_->Rnh();
+}
+double HPSINS::EarthG0() const{
+    return eth_->G0();
+}
+
+const M3d& HPSINS::Maa() const{
+    return Maa_;
+}
+const M3d& HPSINS::Mav() const{
+    return Mav_;
+}
+const M3d& HPSINS::Map() const{
+    return Map_;
+}
+const M3d& HPSINS::Mva() const{
+    return Mva_;
+}
+const M3d& HPSINS::Mvv() const{
+    return Mvv_;
+}
+const M3d& HPSINS::Mvp() const{
+    return Mvp_;
+}
+const M3d& HPSINS::Mpv() const{
+    return Mpv_;
+}
+const M3d& HPSINS::Mpp() const{
+    return Mpp_;
+}
+
+const double HPSINS::TauG() const{
+    return tauG_;
+}
+
+const double HPSINS::TauA() const{
+    return tauA_;
 }
 
 } // namespace sins
