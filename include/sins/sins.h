@@ -1,29 +1,29 @@
-#ifndef SINS_SINS_H_
-#define SINS_SINS_H_
+// Copyright 2021 demax
+#ifndef INCLUDE_SINS_SINS_H_
+#define INCLUDE_SINS_SINS_H_
 
-#include <memory>
 #include <sensor_msgs/Imu.h>
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
+#include <memory>
 #include "sensors/imu.h"
 #include "common/global.h"
-#include "earth.h"
-namespace sins{
+#include "sins/earth.h"
+namespace sins {
 
 using V3d = Eigen::Vector3d;
 using M3d = Eigen::Matrix3d;
 
-class SINS
-{
-public:
+class SINS {
+ public:
     SINS();
     SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts);
-	virtual ~SINS(){}
+    virtual ~SINS() {}
     virtual void Update(const IMUData& imu) = 0;
     virtual void UpdateAttitude() = 0;
     virtual void UpdateVelocity() = 0;
-	virtual void UpdatePosition() = 0;
+    virtual void UpdatePosition() = 0;
 
     virtual void SetErrModelMatrix() = 0;
 
@@ -46,18 +46,18 @@ public:
 
     void SetInitStatus(bool initialized);
 
-protected:
+ protected:
     bool initialized_;
-    V3d att_; //pitch roll yaw
+    V3d att_;  // pitch roll yaw
     V3d vn_, vn_prev_;
     V3d pos_;
     V3d an_;
-    Eigen::Quaterniond q_,q_prev_;
+    Eigen::Quaterniond q_, q_prev_;
     double update_timestamp_, pre_update_timestamp_, dt_;
-    double current_imu_timestamp_, prev_imu_timestamp_,ts_;
+    double current_imu_timestamp_, prev_imu_timestamp_, ts_;
 
     // error model coefficient
-    M3d Maa_,Mav_,Map_,Mva_,Mvv_,Mvp_,Mpv_,Mpp_;
+    M3d Maa_, Mav_, Map_, Mva_, Mvv_, Mvp_, Mpv_, Mpp_;
 };
-} // namespace sins
-#endif
+}  // namespace sins
+#endif  // INCLUDE_SINS_SINS_H_

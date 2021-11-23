@@ -1,24 +1,24 @@
 
-#ifndef SENSORS_IMU_H_
-#define SENSORS_IMU_H_
+// Copyright 2021 demax
+#ifndef INCLUDE_SENSORS_IMU_H_
+#define INCLUDE_SENSORS_IMU_H_
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 using V3d = Eigen::Vector3d;
-class IMUData
-{
-public:
-	IMUData();
+class IMUData {
+ public:
+    IMUData();
     IMUData(const V3d& gyro, const V3d& acce, double timestamp);
-    ~IMUData(){}
+    ~IMUData() {}
     const V3d& Gyro() const;
     const V3d& Acce() const;
     const double Timestamp() const;
-private:
+ private:
     V3d gyro_;
     V3d acce_;
     double timestamp_;
 };
 
-#endif
+#endif  // INCLUDE_SENSORS_IMU_H_

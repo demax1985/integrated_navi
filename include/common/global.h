@@ -1,13 +1,15 @@
-#ifndef COMMON_GLOBAL_H_
-#define COMMON_GLOBAL_H_
+// Copyright 2021 demax
+#ifndef INCLUDE_COMMON_GLOBAL_H_
+#define INCLUDE_COMMON_GLOBAL_H_
 
-#include <cmath>
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
+#include <cmath>
+
 const double pi = 3.141592653589793;
 const Eigen::AngleAxisd V3d2AngleAxisd(const Eigen::Vector3d v3d);
-const Eigen::Quaterniond RotationVector2Quaternion(const Eigen::Vector3d v3d);
+const Eigen::Quaterniond RotationVector2Quaternion(const Eigen::Vector3d& v3d);
 const Eigen::Matrix3d V3d2Skew(const Eigen::Vector3d& vec);
 
 // struct GLOBAL
@@ -31,10 +33,6 @@ const Eigen::Matrix3d V3d2Skew(const Eigen::Vector3d& vec);
 //     const double dph = dps/hour;
 //     const double dpsh = deg/sqrtf(hour);
 //     const double dphpsh = dph/sqrtf(hour);
-    
 // };
 
-
-
-
-#endif
+#endif  // INCLUDE_COMMON_GLOBAL_H_

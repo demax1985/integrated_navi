@@ -1,6 +1,7 @@
+// Copyright 2021 demax
 #include "sensors/imu.h"
 
-IMUData::IMUData(): timestamp_(0){
+IMUData::IMUData(): timestamp_(0) {
     gyro_.setZero();
     acce_.setZero();
 }
@@ -8,7 +9,7 @@ IMUData::IMUData(): timestamp_(0){
 IMUData::IMUData(const V3d &gyro, const V3d &acce, double timestamp):
     timestamp_(timestamp),
     gyro_(gyro),
-    acce_(acce){
+    acce_(acce) {
 }
 
 const V3d& IMUData::Gyro() const {

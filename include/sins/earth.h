@@ -1,12 +1,12 @@
-#ifndef SINS_EARTH_H
-#define SINS_EARTH_H
+// Copyright 2021 demax
+#ifndef INCLUDE_SINS_EARTH_H_
+#define INCLUDE_SINS_EARTH_H_
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
 using V3d = Eigen::Vector3d;
-class Earth
-{
-private:
+class Earth {
+ private:
     double Re_;
     double e2_;
     double sl_;
@@ -19,18 +19,17 @@ private:
     double wie_;
     double g0_;
     double g_;
-    
+
     V3d pos_;
     V3d vn_;
     V3d wnie_;
     V3d wnen_;
     V3d wnin_;
-    V3d wnien_; //wnien = wnie + wnin
+    V3d wnien_;  // wnien = wnie + wnin
     V3d gn_;
     V3d gcc_;
 
-    
-public:
+ public:
     Earth(/* args */);
     Earth(const V3d& pos, const V3d& vn);
     void EarthUpdate(const V3d& pos, const V3d& vn);
@@ -47,15 +46,4 @@ public:
     const double G0() const;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-#endif
+#endif  // INCLUDE_SINS_EARTH_H_

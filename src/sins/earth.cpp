@@ -1,8 +1,9 @@
+// Copyright 2021 demax
 #include "sins/earth.h"
 
-Earth::Earth(/* args */){
-    pos_ = {0.0,0.0,0.0};
-    vn_ = {0.0,0.0,0.0};
+Earth::Earth(/* args */) {
+    pos_ = {0.0, 0.0, 0.0};
+    vn_ = {0.0, 0.0, 0.0};
 
     Re_ = 6378137.0;
     double f = 1.0/298.257;
@@ -28,7 +29,7 @@ Earth::Earth(/* args */){
     gcc_ = gn_ - wnien_.cross(vn_);
 }
 
-Earth::Earth(const V3d& pos, const V3d& vn){
+Earth::Earth(const V3d& pos, const V3d& vn) {
     pos_ = pos;
     vn_ = vn;
 
@@ -56,7 +57,7 @@ Earth::Earth(const V3d& pos, const V3d& vn){
     gcc_ = gn_ - wnien_.cross(vn_);
 }
 
-void Earth::EarthUpdate(const V3d& pos, const V3d& vn){
+void Earth::EarthUpdate(const V3d& pos, const V3d& vn) {
     pos_ = pos;
     vn_ = vn;
 
@@ -84,46 +85,46 @@ void Earth::EarthUpdate(const V3d& pos, const V3d& vn){
     gcc_ = gn_ - wnien_.cross(vn_);
 }
 
-const V3d& Earth::Wnin() const{
+const V3d& Earth::Wnin() const {
     return wnin_;
 }
 
-const V3d& Earth::Wnie() const{
+const V3d& Earth::Wnie() const {
     return wnie_;
 }
 
-const V3d& Earth::Wnien() const{
+const V3d& Earth::Wnien() const {
     return wnien_;
 }
 
-const V3d& Earth::Gcc() const{
+const V3d& Earth::Gcc() const {
     return gcc_;
 }
 
-const double Earth::Rmh() const{
+const double Earth::Rmh() const {
     return rmh_;
 }
 
-const double Earth::Rnh() const{
+const double Earth::Rnh() const {
     return rnh_;
 }
 
-const double Earth::ClRnh() const{
+const double Earth::ClRnh() const {
     return cl_rnh_;
 }
 
-const double Earth::Tl() const{
+const double Earth::Tl() const {
     return tl_;
 }
 
-const double Earth::Sl() const{
+const double Earth::Sl() const {
     return sl_;
 }
 
-const double Earth::Cl() const{
+const double Earth::Cl() const {
     return cl_;
 }
 
-const double Earth::G0() const{
+const double Earth::G0() const {
     return g0_;
 }

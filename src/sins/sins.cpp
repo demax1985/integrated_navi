@@ -1,3 +1,4 @@
+// Copyright 2021 demax
 #include "sins/sins.h"
 
 namespace sins {
@@ -9,8 +10,7 @@ SINS::SINS():
     ts_(0.01),
     current_imu_timestamp_(0.0),
     prev_imu_timestamp_(0.0),
-    initialized_(false)
-{
+    initialized_(false) {
     att_.setZero();
     vn_.setZero();
     vn_prev_.setZero();
@@ -39,11 +39,10 @@ SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts):
     ts_(ts),
     current_imu_timestamp_(0.0),
     prev_imu_timestamp_(0.0),
-    initialized_(false)
-{
-    Eigen::AngleAxisd yawAngle(att(2),V3d::UnitZ());
-    Eigen::AngleAxisd pitchAngle(att(0),V3d::UnitX());
-    Eigen::AngleAxisd rollAngle(att(1),V3d::UnitY());
+    initialized_(false) {
+    Eigen::AngleAxisd yawAngle(att(2), V3d::UnitZ());
+    Eigen::AngleAxisd pitchAngle(att(0), V3d::UnitX());
+    Eigen::AngleAxisd rollAngle(att(1), V3d::UnitY());
     q_ = rollAngle*pitchAngle*yawAngle;
     q_prev_ = q_;
     an_.setZero();
@@ -73,7 +72,7 @@ const M3d SINS::GetRotationMatrix() const {
     return q_.toRotationMatrix();
 }
 
-void SINS::SetInitStatus(bool initialized){
+void SINS::SetInitStatus(bool initialized) {
     initialized_ = initialized;
 }
-} //namespace sins
+}  // namespace sins

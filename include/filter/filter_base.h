@@ -1,13 +1,13 @@
-#ifndef FILTER_FILTER_BASE_H_
-#define FILTER_FILTER_BASE_H_
+// Copyright 2021 demax
+#ifndef INCLUDE_FILTER_FILTER_BASE_H_
+#define INCLUDE_FILTER_FILTER_BASE_H_
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 
-class FilterBase
-{
-public:
+class FilterBase {
+ public:
     FilterBase() {}
     FilterBase(const Eigen::VectorXd& state, const Eigen::MatrixXd& P, const Eigen::MatrixXd& Q);
     virtual ~FilterBase() {}
@@ -16,7 +16,7 @@ public:
     virtual void MeasurementUpdate(const Eigen::VectorXd Zk, const Eigen::MatrixXd Hk,  const Eigen::MatrixXd Rk) = 0;
     virtual void SetPkPositiveSymmetric() = 0;
 
-protected:
+ protected:
     bool converged_;
     double dt_;
     Eigen::VectorXd state_;
@@ -25,4 +25,4 @@ protected:
     Eigen::MatrixXd Fk_;
 };
 
-#endif
+#endif  // INCLUDE_FILTER_FILTER_BASE_H_
