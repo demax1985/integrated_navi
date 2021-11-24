@@ -21,6 +21,21 @@ int main(int argc, char **argv) {
   hpsins.ShowVel();
   hpsins.ShowPos();
 
+  // test eulerangle and quaternion
+  V3d atti = {3, 5, 30};
+  atti = atti / 180 * 3.1415926;
+  Eigen::AngleAxisd yawAngle(atti(2), V3d::UnitZ());
+  Eigen::AngleAxisd pitchAngle(atti(0), V3d::UnitX());
+  Eigen::AngleAxisd rollAngle(atti(1), V3d::UnitY());
+
+  // Eigen::Quaterniond qua = rollAngle * pitchAngle * yawAngle;
+  Eigen::Quaterniond qua = Euler2Quaternion(atti);
+  std::cout << "qua is: " << qua.w() << " " << qua.x() << " " << qua.y() << " "
+            << qua.z() << " " << std::endl;
+  Eigen::Matrix3d mat = qua.matrix();
+  std::cout << "mat is: " << std::endl << mat << std::endl;
+  std::cout << "att is: " << Quaternion2Euler(qua) << std::endl;
+
   V3d v1 = {0, 0, 45 / 57.3};
   Eigen::Quaterniond q1 = RotationVector2Quaternion(v1);
   std::cout << "q1 is: " << q1.w() << " " << q1.x() << " " << q1.y() << " "
@@ -109,10 +124,16 @@ int main(int argc, char **argv) {
 
   pkf15->Predict(ts);
   pkf15->MeasurementUpdate(ob, Hk, Rk);
+  pkf15->FeedbackAllState();
+  std::cout << "after feedback, state is: " << state << std::endl;
   pkf15->Predict(ts);
   pkf15->MeasurementUpdate(ob, Hk, Rk);
+  pkf15->FeedbackAllState();
+  std::cout << "after feedback, state is: " << state << std::endl;
   pkf15->Predict(ts);
   pkf15->MeasurementUpdate(ob, Hk, Rk);
+  pkf15->FeedbackAllState();
+  std::cout << "after feedback, state is: " << state << std::endl;
 
   // ros::spin();
   return 0;

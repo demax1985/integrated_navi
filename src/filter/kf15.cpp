@@ -28,7 +28,8 @@ void KF15::MeasurementUpdate(const Eigen::VectorXd Zk, const Eigen::MatrixXd Hk,
   state_ += Kk * innovation;
   Pk_ -= Kk * Hk * Pk_;
   SetPkPositiveSymmetric();
-  std::cout << "state is: " << std::endl << state_ << std::endl;
+  std::cout << "after measurement update, state is: " << std::endl
+            << state_ << std::endl;
 }
 
 void KF15::SetFk(double dt) {
@@ -83,6 +84,60 @@ void KF15::SetPkPositiveSymmetric() {
   // TODO(demax): the following code maybe wrong
   Pk_ = (Pk_ + Pk_.transpose()) / 2.0;
   std::cout << "Pk is: " << std::endl << Pk_ << std::endl;
+}
+
+void KF15::FeedbackAllState() {
+  FeedbackAttitude();
+  FeedbackVelocity();
+  FeedbackPosition();
+  FeedbackGyroBias();
+  FeedbackAcceBias();
+}
+
+void KF15::FeedbackAttitude() {
+  V3d phi = {state_(static_cast<int>(KfErrorState::kPitch)),
+             state_(static_cast<int>(KfErrorState::kRoll)),
+             state_(static_cast<int>(KfErrorState::Kyaw))};
+  pSINS_->FeedbackAttitude(phi);
+  state_(static_cast<int>(KfErrorState::kPitch)) = 0;
+  state_(static_cast<int>(KfErrorState::kRoll)) = 0;
+  state_(static_cast<int>(KfErrorState::Kyaw)) = 0;
+}
+void KF15::FeedbackVelocity() {
+  V3d dvn = {state_(static_cast<int>(KfErrorState::kVe)),
+             state_(static_cast<int>(KfErrorState::kVn)),
+             state_(static_cast<int>(KfErrorState::kVu))};
+  pSINS_->FeedbackVelocity(dvn);
+  state_(static_cast<int>(KfErrorState::kVe)) = 0;
+  state_(static_cast<int>(KfErrorState::kVn)) = 0;
+  state_(static_cast<int>(KfErrorState::kVu)) = 0;
+}
+void KF15::FeedbackPosition() {
+  V3d dpos = {state_(static_cast<int>(KfErrorState::kLat)),
+              state_(static_cast<int>(KfErrorState::kLon)),
+              state_(static_cast<int>(KfErrorState::kAlt))};
+  pSINS_->FeedbackVelocity(dpos);
+  state_(static_cast<int>(KfErrorState::kLat)) = 0;
+  state_(static_cast<int>(KfErrorState::kLon)) = 0;
+  state_(static_cast<int>(KfErrorState::kAlt)) = 0;
+}
+void KF15::FeedbackGyroBias() {
+  V3d gyro_bias = {state_(static_cast<int>(KfErrorState::kGbx)),
+                   state_(static_cast<int>(KfErrorState::kGby)),
+                   state_(static_cast<int>(KfErrorState::kGbz))};
+  pSINS_->FeedbackGyroBias(gyro_bias);
+  state_(static_cast<int>(KfErrorState::kGbx)) = 0;
+  state_(static_cast<int>(KfErrorState::kGby)) = 0;
+  state_(static_cast<int>(KfErrorState::kGbz)) = 0;
+}
+void KF15::FeedbackAcceBias() {
+  V3d acce_bias = {state_(static_cast<int>(KfErrorState::kAbx)),
+                   state_(static_cast<int>(KfErrorState::kAby)),
+                   state_(static_cast<int>(KfErrorState::kAbz))};
+  pSINS_->FeedbackVelocity(acce_bias);
+  state_(static_cast<int>(KfErrorState::kAbx)) = 0;
+  state_(static_cast<int>(KfErrorState::kAby)) = 0;
+  state_(static_cast<int>(KfErrorState::kAbz)) = 0;
 }
 
 }  // namespace sins

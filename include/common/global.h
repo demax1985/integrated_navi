@@ -11,6 +11,8 @@ const double pi = 3.141592653589793;
 const Eigen::AngleAxisd V3d2AngleAxisd(const Eigen::Vector3d v3d);
 const Eigen::Quaterniond RotationVector2Quaternion(const Eigen::Vector3d& v3d);
 const Eigen::Matrix3d V3d2Skew(const Eigen::Vector3d& vec);
+Eigen::Quaterniond Euler2Quaternion(const Eigen::Vector3d& euler);
+Eigen::Vector3d Quaternion2Euler(const Eigen::Quaterniond& qua);
 
 // struct GLOBAL
 // {

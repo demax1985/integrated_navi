@@ -42,6 +42,13 @@ class KF15 : public FilterBase {
                          const Eigen::MatrixXd Rk) override;
   void SetPkPositiveSymmetric() override;
 
+  void FeedbackAttitude();
+  void FeedbackVelocity();
+  void FeedbackPosition();
+  void FeedbackGyroBias();
+  void FeedbackAcceBias();
+  void FeedbackAllState();
+
  private:
   std::shared_ptr<SINS> pSINS_;
 };

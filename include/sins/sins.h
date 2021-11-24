@@ -41,6 +41,14 @@ class SINS {
   virtual const double TauG() const = 0;
   virtual const double TauA() const = 0;
 
+  virtual void FeedbackAttitude(const V3d& phi) = 0;
+  virtual void FeedbackVelocity(const V3d& dvn) = 0;
+  virtual void FeedbackPosition(const V3d& dpos) = 0;
+  virtual void FeedbackGyroBias(const V3d& gyro_bias) = 0;
+  virtual void FeedbackAcceBias(const V3d& acce_bias) = 0;
+
+  virtual void InitialAlignment(const V3d& mean_acce_in_b_fram) = 0;
+
   const V3d& GetAttitude() const;
   const V3d& GetVelocity() const;
   const V3d& GetPosition() const;
@@ -50,13 +58,17 @@ class SINS {
 
  protected:
   bool initialized_;
+  bool is_static_;
   V3d att_;  // pitch roll yaw
   V3d vn_, vn_prev_;
   V3d pos_;
   V3d an_;
   Eigen::Quaterniond q_, q_prev_;
   double update_timestamp_, pre_update_timestamp_, dt_;
+  // ts_: imu data interval
   double current_imu_timestamp_, prev_imu_timestamp_, ts_;
+
+  V3d gyro_bias_, acce_bias_;
 
   // error model coefficient
   M3d Maa_, Mav_, Map_, Mva_, Mvv_, Mvp_, Mpv_, Mpp_;

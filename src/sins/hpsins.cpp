@@ -92,7 +92,8 @@ void HPSINS::UpdateAttitude() {
       RotationVector2Quaternion(wib_middle_ * dt_ / 2.0);
   q_middle_ = q_n_in_middle * q_ * q_b_ib_middle;
   // TODO(demax) : check eulerangle rotation sequence
-  att_ = q_.matrix().eulerAngles(2, 1, 0);
+  // att_ = q_.matrix().eulerAngles(2, 1, 0);
+  att_ = Quaternion2Euler(q_);
 }
 
 void HPSINS::UpdateVelocity() {
@@ -197,6 +198,23 @@ void HPSINS::SetErrModelMatrix() {
   Mpp_(1, 0) = vn_(0) * f_clRnh * tl;
   Mpp_(1, 2) = -vn_(0) * f_Rnh2 * secl;
 }
+
+void HPSINS::InitialLevelAlignment(const V3d& mean_acce_in_b_fram) {
+  double pitch = asin(mean_acce_in_b_fram(1) / EarthG0());
+  double roll = atan2(-mean_acce_in_b_fram(0), mean_acce_in_b_fram(2));
+  att_ = {pitch, roll, 0};
+  q_ = Euler2Quaternion(att_);
+  q_prev_ = q_;
+  SetInitStatus(true);
+}
+
+void HPSINS::FeedbackAttitude(const V3d& phi) {
+  q_ = RotationVector2Quaternion(phi) * q_;
+}
+void HPSINS::FeedbackVelocity(const V3d& dvn) { vn_ -= dvn; }
+void HPSINS::FeedbackPosition(const V3d& dpos) { pos_ -= dpos; }
+void HPSINS::FeedbackGyroBias(const V3d& gyro_bias) { gyro_bias_ += gyro_bias; }
+void HPSINS::FeedbackAcceBias(const V3d& acce_bias) { acce_bias_ += acce_bias; }
 
 const V3d& HPSINS::EarthWnin() const { return eth_->Wnin(); }
 const V3d& HPSINS::EarthWnie() const { return eth_->Wnie(); }

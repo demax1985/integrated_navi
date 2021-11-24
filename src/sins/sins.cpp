@@ -10,7 +10,8 @@ SINS::SINS()
       ts_(0.01),
       current_imu_timestamp_(0.0),
       prev_imu_timestamp_(0.0),
-      initialized_(false) {
+      initialized_(false),
+      is_static_(false) {
   att_.setZero();
   vn_.setZero();
   vn_prev_.setZero();
@@ -18,6 +19,8 @@ SINS::SINS()
   pos_.setZero();
   q_.setIdentity();
   q_prev_.setIdentity();
+  gyro_bias_.setZero();
+  acce_bias_.setZero();
   Maa_.setZero();
   Mav_.setZero();
   Map_.setZero();
@@ -39,12 +42,12 @@ SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts)
       ts_(ts),
       current_imu_timestamp_(0.0),
       prev_imu_timestamp_(0.0),
-      initialized_(false) {
-  Eigen::AngleAxisd yawAngle(att(2), V3d::UnitZ());
-  Eigen::AngleAxisd pitchAngle(att(0), V3d::UnitX());
-  Eigen::AngleAxisd rollAngle(att(1), V3d::UnitY());
-  q_ = rollAngle * pitchAngle * yawAngle;
+      initialized_(false),
+      is_static_(false) {
+  q_ = Euler2Quaternion(att_);
   q_prev_ = q_;
+  gyro_bias_.setZero();
+  acce_bias_.setZero();
   an_.setZero();
   Maa_.setZero();
   Mav_.setZero();

@@ -51,6 +51,14 @@ class HPSINS : public SINS {
   const double TauG() const override;
   const double TauA() const override;
 
+  void FeedbackAttitude(const V3d& phi) override;
+  void FeedbackVelocity(const V3d& dvn) override;
+  void FeedbackPosition(const V3d& dpos) override;
+  void FeedbackGyroBias(const V3d& gyro_bias) override;
+  void FeedbackAcceBias(const V3d& acce_bias) override;
+
+  void InitialLevelAlignment(const V3d& mean_acce_in_b_fram) override;
+
   const V3d& EarthWnin() const;
   const V3d& EarthWnie() const;
   const V3d& EarthWnien() const;
