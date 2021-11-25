@@ -31,6 +31,8 @@ class HPSINS : public SINS {
   HPSINS(/* args */);
   HPSINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts,
          const int num_samples, double tauG, double tauA);
+  HPSINS(const HPSINS& other);             // copy constructor
+  HPSINS& operator=(const HPSINS& other);  // operator =
 
   void Update(const IMUData& imu) override;
   void UpdateAttitude() override;
