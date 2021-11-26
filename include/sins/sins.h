@@ -47,7 +47,7 @@ class SINS {
   virtual void FeedbackGyroBias(const V3d& gyro_bias) = 0;
   virtual void FeedbackAcceBias(const V3d& acce_bias) = 0;
 
-  virtual void InitialAlignment(const V3d& mean_acce_in_b_fram) = 0;
+  virtual void InitialLevelAlignment(const V3d& mean_acce_in_b_fram) = 0;
 
   const V3d& GetAttitude() const;
   const V3d& GetVelocity() const;

@@ -51,6 +51,7 @@ HPSINS::HPSINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts,
 }
 
 HPSINS::HPSINS(const HPSINS& other) : SINS(other) {
+  std::cout << "HPSINS copy constructor is called" << std::endl;
   num_samples_ = other.num_samples_;
   phim_ = other.phim_;
   phim_prev_ = other.phim_prev_;
@@ -65,12 +66,45 @@ HPSINS::HPSINS(const HPSINS& other) : SINS(other) {
   pos_middle_ = other.pos_middle_;
   vn_middle_ = other.vn_middle_;
   q_middle_ = other.q_middle_;
-  // std::unique_ptr<Earth> eth_;
+
   imus_ = other.imus_;
   cone_scull_coeff_ = other.cone_scull_coeff_;
 
   tauG_ = other.tauG_;
   tauA_ = other.tauA_;
+
+  eth_ = std::unique_ptr<Earth>(new Earth(*other.eth_));
+}
+
+HPSINS& HPSINS::operator=(const HPSINS& other) {
+  std::cout << "HPSINS operator = is called" << std::endl;
+  if (this == &other) {
+    return *this;
+  }
+  SINS::operator=(other);
+  num_samples_ = other.num_samples_;
+  phim_ = other.phim_;
+  phim_prev_ = other.phim_prev_;
+  dvbm_ = other.dvbm_;
+  dvbm_prev_ = other.dvbm_prev_;
+  wib_ = other.wib_;
+  wib_prev_ = other.wib_prev_;
+  wib_middle_ = other.wib_middle_;
+  fb_ = other.fb_;
+  fb_prev_ = other.fb_prev_;
+  fb_middle_ = other.fb_middle_;
+  pos_middle_ = other.pos_middle_;
+  vn_middle_ = other.vn_middle_;
+  q_middle_ = other.q_middle_;
+
+  imus_ = other.imus_;
+  cone_scull_coeff_ = other.cone_scull_coeff_;
+
+  tauG_ = other.tauG_;
+  tauA_ = other.tauA_;
+
+  eth_.reset(new Earth(*other.eth_));
+  return *this;
 }
 
 void HPSINS::Update(const IMUData& imu) {

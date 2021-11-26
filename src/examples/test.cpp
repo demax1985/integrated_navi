@@ -99,6 +99,22 @@ int main(int argc, char **argv) {
   double taug = 3600;
   double taua = 3600;
   std::shared_ptr<HPSINS> psins(new HPSINS(att, vn, pos, ts, n, taug, taua));
+  std::shared_ptr<HPSINS> psins_prev(new HPSINS(*psins));
+  std::cout << "sins : earth is: " << psins->EarthWnin() << std::endl;
+  std::cout << "sins_prev : earth is: " << psins_prev->EarthWnin() << std::endl;
+  std::cout << "sins : attitude is: " << psins->GetAttitude() << std::endl;
+  std::cout << "sins_prev : attitude is: " << psins_prev->GetAttitude()
+            << std::endl;
+
+  std::cout << "before =, object sins : earth is: " << hpsins.EarthWnin()
+            << std::endl;
+  std::cout << "before =, object sins : attitude is: " << hpsins.GetAttitude()
+            << std::endl;
+  hpsins = *psins_prev;
+  std::cout << "object sins : earth is: " << hpsins.EarthWnin() << std::endl;
+  std::cout << "object sins : attitude is: " << hpsins.GetAttitude()
+            << std::endl;
+
   Eigen::Matrix<double, 15, 15> pk;
   Eigen::Matrix<double, 15, 15> qt;
   qt.setZero();
