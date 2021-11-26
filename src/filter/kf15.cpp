@@ -86,6 +86,9 @@ void KF15::SetPkPositiveSymmetric() {
   std::cout << "Pk is: " << std::endl << Pk_ << std::endl;
 }
 
+// TODO(demax): coding later
+void KF15::CheckConvergence() { ; }
+
 void KF15::FeedbackAllState() {
   FeedbackAttitude();
   FeedbackVelocity();

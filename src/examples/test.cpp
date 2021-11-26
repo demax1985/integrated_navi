@@ -5,6 +5,7 @@
 
 #include "../../include/sins/hpsins.h"
 #include "filter/kf15.h"
+#include "sensors/gnss.h"
 
 using sins::HPSINS;
 using sins::KF15;
@@ -150,6 +151,9 @@ int main(int argc, char **argv) {
   pkf15->MeasurementUpdate(ob, Hk, Rk);
   pkf15->FeedbackAllState();
   std::cout << "after feedback, state is: " << state << std::endl;
+
+  GnssData gnss;
+  std::cout << "gnss pos is: " << std::endl;
 
   // ros::spin();
   return 0;

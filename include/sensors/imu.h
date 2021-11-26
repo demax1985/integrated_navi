@@ -4,8 +4,6 @@
 #define INCLUDE_SENSORS_IMU_H_
 
 #include <Eigen/Core>
-#include <Eigen/Dense>
-#include <Eigen/Geometry>
 using V3d = Eigen::Vector3d;
 class IMUData {
  public:

@@ -18,6 +18,14 @@ class FilterBase {
                                  const Eigen::MatrixXd Hk,
                                  const Eigen::MatrixXd Rk) = 0;
   virtual void SetPkPositiveSymmetric() = 0;
+  virtual void CheckConvergence() = 0;
+
+  virtual void FeedbackAttitude() { return; }
+  virtual void FeedbackVelocity() { return; }
+  virtual void FeedbackPosition() { return; }
+  virtual void FeedbackGyroBias() { return; }
+  virtual void FeedbackAcceBias() { return; }
+  virtual void FeedbackAllState() { return; }
 
  protected:
   bool converged_;

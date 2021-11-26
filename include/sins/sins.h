@@ -57,9 +57,8 @@ class SINS {
   void SetInitStatus(bool initialized);
 
  protected:
-  bool initialized_;
-  bool is_static_;
-  V3d att_;  // pitch roll yaw
+  bool initialized_;  // if initial alignment is completed
+  V3d att_;           // pitch roll yaw
   V3d vn_, vn_prev_;
   V3d pos_;
   V3d an_;
