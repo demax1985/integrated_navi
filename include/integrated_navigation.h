@@ -2,6 +2,10 @@
 #ifndef INCLUDE_INTEGRATED_NAVIGATION_H_
 #define INCLUDE_INTEGRATED_NAVIGATION_H_
 
+#include <geometry_msgs/Vector3.h>
+#include <ros/ros.h>
+#include <sensor_msgs/Imu.h>
+
 #include <memory>
 
 #include "filter/filter_base.h"
@@ -24,12 +28,19 @@ class IntegratedNavigation {
   double gnss_yaw_;
   double zihr_initial_yaw_, zihr_initial_time_;
 
+  // subscribes
+  ros::Subscriber imu_sub_;
+  ros::Subscriber gnss_sub_;
+
+  ros::NodeHandle nh_;
+
  public:
   IntegratedNavigation(/* args */);
   ~IntegratedNavigation();
+  void ImuCallback(const sensor_msgs::ImuConstPtr& imu);
+  // TODO(demax): define gnss msg later
+  void GnssCallback(const geometry_msgs::Vector3ConstPtr& gnss_pos);
 };
-
-IntegratedNavigation::IntegratedNavigation(/* args */) {}
 
 IntegratedNavigation::~IntegratedNavigation() {}
 
