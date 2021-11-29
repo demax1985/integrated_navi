@@ -70,5 +70,5 @@ int main(int argc, char **argv) {
   state.setZero();
 
   std::unique_ptr<KF15> pkf15(new KF15(state, pk, qt, psins));
-  IntegratedNavigation estimate(psins, pkf15);
+  IntegratedNavigation estimate(psins, std::move(pkf15));
 }

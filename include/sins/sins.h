@@ -59,6 +59,8 @@ class SINS {
   void SetInitStatus(bool initialized) { initialized_ = initialized; }
   bool Initialized() { return initialized_; }
   double UpdateTimestamp() { return update_timestamp_; }
+  void SetGyroBias(const V3d& gyrobias) { gyro_bias_ = gyrobias; }
+  void SetAcceBias(const V3d& accebias) { acce_bias_ = accebias; }
 
  protected:
   bool initialized_;  // if initial alignment is completed

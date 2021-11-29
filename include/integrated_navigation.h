@@ -30,6 +30,7 @@ class IntegratedNavigation {
   int initial_alignment_count_;
 
   V3d mean_acce_in_b_fram_;
+  V3d mean_gyro_static_;
 
   double kf_predict_dt_, kf_predict_time_prev_;
 
@@ -56,12 +57,11 @@ class IntegratedNavigation {
   IntegratedNavigation(/* args */);
   IntegratedNavigation(std::shared_ptr<SINS> sins,
                        std::unique_ptr<FilterBase> filter);
-  ~IntegratedNavigation();
+  ~IntegratedNavigation() { outfile_.close(); }
+
   void ImuCallback(const sensor_msgs::ImuConstPtr& imu);
   // TODO(demax): define gnss msg later
   void GnssCallback(const sensor_msgs::NavSatFixConstPtr& gnss_pos);
 };
-
-IntegratedNavigation::~IntegratedNavigation() { outfile_.close(); }
 
 #endif  // INCLUDE_INTEGRATED_NAVIGATION_H_

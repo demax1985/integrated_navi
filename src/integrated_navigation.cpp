@@ -13,6 +13,7 @@ IntegratedNavigation::IntegratedNavigation()
       kf_predict_dt_(0.0),
       kf_predict_time_prev_(0.0) {
   mean_acce_in_b_fram_.setZero();
+  mean_gyro_static_.setZero();
   imu_sub_ =
       nh_.subscribe("/IMU_data", 1, &IntegratedNavigation::ImuCallback, this);
   gnss_sub_ =
@@ -36,6 +37,7 @@ IntegratedNavigation::IntegratedNavigation(std::shared_ptr<SINS> sins,
       kf_predict_time_prev_(0.0),
       pFilter_(std::move(filter)) {
   mean_acce_in_b_fram_.setZero();
+  mean_gyro_static_.setZero();
   imu_sub_ =
       nh_.subscribe("/IMU_data", 1, &IntegratedNavigation::ImuCallback, this);
   gnss_sub_ =
@@ -57,8 +59,11 @@ void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
   if (!pSINS_->Initialized()) {
     if (is_static_) {
       mean_acce_in_b_fram_ += acce;
+      mean_gyro_static_ += gyro;
       if (initial_alignment_count_++ == kInitialAlignmentCount) {
         mean_acce_in_b_fram_ /= initial_alignment_count_;
+        mean_gyro_static_ /= initial_alignment_count_;
+        pSINS_->SetGyroBias(mean_gyro_static_);
         pSINS_->InitialLevelAlignment(mean_acce_in_b_fram_);
         pSINS_->SetInitStatus(true);
         kf_predict_time_prev_ = timestamp;

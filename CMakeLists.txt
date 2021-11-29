@@ -137,7 +137,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 
 set(SOURCE_LIST
-   src/examples/test.cpp
+  #  src/examples/test.cpp
    src/examples/test_static.cpp
    src/sensors/imu.cpp
    src/sins/earth.cpp
