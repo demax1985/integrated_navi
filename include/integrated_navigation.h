@@ -5,13 +5,16 @@
 #include <geometry_msgs/Vector3.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
+#include <sensor_msgs/NavSatFix.h>
 
 #include <memory>
 
 #include "filter/filter_base.h"
 #include "sensors/gnss.h"
+#include "sensors/imu.h"
 #include "sins/sins.h"
 using sins::SINS;
+enum FusionAlgorithm { kFilter, kFactorGraphOptimization };
 
 class IntegratedNavigation {
  private:
@@ -20,6 +23,13 @@ class IntegratedNavigation {
   // flags
   bool is_static_;
   bool gnss_vel_valid_, gnss_pos_valid_;
+
+  // counts
+  int initial_alignment_count_;
+
+  V3d mean_acce_in_b_fram_;
+
+  double kf_predict_dt_, kf_predict_time_prev_;
 
   // measuremet
   GnssData gnss_;
@@ -34,12 +44,19 @@ class IntegratedNavigation {
 
   ros::NodeHandle nh_;
 
+  // static consts
+  static const int kInitialAlignmentCount = 200;
+  static constexpr double kKfPredictDt = 0.1;
+
  public:
   IntegratedNavigation(/* args */);
+  IntegratedNavigation(std::shared_ptr<SINS> sins,
+                       std::unique_ptr<FilterBase> filter,
+                       FusionAlgorithm algo);
   ~IntegratedNavigation();
   void ImuCallback(const sensor_msgs::ImuConstPtr& imu);
   // TODO(demax): define gnss msg later
-  void GnssCallback(const geometry_msgs::Vector3ConstPtr& gnss_pos);
+  void GnssCallback(const sensor_msgs::NavSatFixConstPtr& gnss_pos);
 };
 
 IntegratedNavigation::~IntegratedNavigation() {}

@@ -28,7 +28,8 @@ class KF15 : public FilterBase {
     kGbz,
     kAbx,
     kAby,
-    kAbz
+    kAbz,
+    kStateNumber
   };
   KF15() {}
   //    KF15(const Eigen::VectorXd& state, const Eigen::MatrixXd& P, const

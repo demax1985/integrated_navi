@@ -55,6 +55,8 @@ class SINS {
   const M3d GetRotationMatrix() const;
 
   void SetInitStatus(bool initialized);
+  bool Initialized() { return initialized_; }
+  double UpdateTimestamp() { return update_timestamp_; }
 
  protected:
   bool initialized_;  // if initial alignment is completed
