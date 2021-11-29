@@ -106,7 +106,7 @@ void IntegratedNavigation::GnssCallback(
   } else {
     dt *= -1;
     V3d gnss_pos_extrapolated =
-        gnss_.gnss_pos_ + pSINS_->GetVelocity() * pSINS_->Mpv() * dt;
+        gnss_.gnss_pos_ + pSINS_->Mpv() * pSINS_->GetVelocity() * dt;
     V3d Zk = pSINS_->GetPosition() - gnss_pos_extrapolated;
     pFilter_->MeasurementUpdate(Zk, Hk, Rk);
     pFilter_->FeedbackAllState();

@@ -8,6 +8,7 @@
 #include <sensor_msgs/NavSatFix.h>
 
 #include <fstream>
+#include <iostream>
 #include <memory>
 
 #include "filter/filter_base.h"

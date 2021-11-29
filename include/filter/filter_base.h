@@ -27,11 +27,11 @@ class FilterBase {
   virtual void FeedbackAcceBias() { return; }
   virtual void FeedbackAllState() { return; }
 
-  virtual int GetAttitudeIndex() { return; }
-  virtual int GetVnIndex() { return; }
-  virtual int GetPosIndex() { return; }
-  virtual int GetGyroBiasIndex() { return; }
-  virtual int GetAcceBiasIndex() { return; }
+  virtual int GetAttitudeIndex() { return 0; }
+  virtual int GetVnIndex() { return 0; }
+  virtual int GetPosIndex() { return 0; }
+  virtual int GetGyroBiasIndex() { return 0; }
+  virtual int GetAcceBiasIndex() { return 0; }
 
   int GetStateNumber() { return state_.rows(); }
 
