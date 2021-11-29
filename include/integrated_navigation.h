@@ -55,8 +55,7 @@ class IntegratedNavigation {
  public:
   IntegratedNavigation(/* args */);
   IntegratedNavigation(std::shared_ptr<SINS> sins,
-                       std::unique_ptr<FilterBase> filter,
-                       FusionAlgorithm algo);
+                       std::unique_ptr<FilterBase> filter);
   ~IntegratedNavigation();
   void ImuCallback(const sensor_msgs::ImuConstPtr& imu);
   // TODO(demax): define gnss msg later

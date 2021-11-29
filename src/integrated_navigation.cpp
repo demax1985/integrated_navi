@@ -23,8 +23,7 @@ IntegratedNavigation::IntegratedNavigation()
 }
 
 IntegratedNavigation::IntegratedNavigation(std::shared_ptr<SINS> sins,
-                                           std::unique_ptr<FilterBase> filter,
-                                           FusionAlgorithm algo)
+                                           std::unique_ptr<FilterBase> filter)
     : is_static_(false),
       gnss_vel_valid_(false),
       gnss_pos_valid_(false),
@@ -34,7 +33,8 @@ IntegratedNavigation::IntegratedNavigation(std::shared_ptr<SINS> sins,
       zihr_initial_time_(0.0),
       initial_alignment_count_(0),
       kf_predict_dt_(0.0),
-      kf_predict_time_prev_(0.0) {
+      kf_predict_time_prev_(0.0),
+      pFilter_(std::move(filter)) {
   mean_acce_in_b_fram_.setZero();
   imu_sub_ =
       nh_.subscribe("/IMU_data", 1, &IntegratedNavigation::ImuCallback, this);
@@ -43,12 +43,8 @@ IntegratedNavigation::IntegratedNavigation(std::shared_ptr<SINS> sins,
   outfile_.open("result.txt");
   outfile_ << "pitch, roll, yaw, ve, vn, vu, lat, lon, alt, gyrobias, accebias"
            << std::endl;
-  if (algo == kFilter) {
-    pSINS_ = sins;
-    pFilter_ = std::move(filter);
-  } else {
-    // TODO(demax): FactorGraphOptimization implimentation
-  }
+  pSINS_ = sins;
+  //   pFilter_ = std::move(filter);
 }
 
 void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
