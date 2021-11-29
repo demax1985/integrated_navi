@@ -49,12 +49,14 @@ class SINS {
 
   virtual void InitialLevelAlignment(const V3d& mean_acce_in_b_fram) = 0;
 
-  const V3d& GetAttitude() const;
-  const V3d& GetVelocity() const;
-  const V3d& GetPosition() const;
-  const M3d GetRotationMatrix() const;
+  const V3d& GetAttitude() const { return att_; }
+  const V3d& GetVelocity() const { return vn_; }
+  const V3d& GetPosition() const { return pos_; }
+  const V3d& GetGyroBias() const { return gyro_bias_; }
+  const V3d& GetAcceBias() const { return acce_bias_; }
+  const M3d GetRotationMatrix() const { return q_.toRotationMatrix(); }
 
-  void SetInitStatus(bool initialized);
+  void SetInitStatus(bool initialized) { initialized_ = initialized; }
   bool Initialized() { return initialized_; }
   double UpdateTimestamp() { return update_timestamp_; }
 

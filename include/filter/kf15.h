@@ -51,6 +51,18 @@ class KF15 : public FilterBase {
   void FeedbackAcceBias() override;
   void FeedbackAllState() override;
 
+  int GetAttitudeIndex() override {
+    return static_cast<int>(KfErrorState::kPitch);
+  }
+  int GetVnIndex() override { return static_cast<int>(KfErrorState::kVe); }
+  int GetPosIndex() override { return static_cast<int>(KfErrorState::kLat); }
+  int GetGyroBiasIndex() override {
+    return static_cast<int>(KfErrorState::kGbx);
+  }
+  int GetAcceBiasIndex() override {
+    return static_cast<int>(KfErrorState::kAbx);
+  }
+
  private:
   std::shared_ptr<SINS> pSINS_;
 };

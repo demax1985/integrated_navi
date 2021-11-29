@@ -57,13 +57,4 @@ SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts)
   Mpp_.setZero();
 }
 
-const V3d& SINS::GetAttitude() const { return att_; }
-
-const V3d& SINS::GetVelocity() const { return vn_; }
-
-const V3d& SINS::GetPosition() const { return pos_; }
-
-const M3d SINS::GetRotationMatrix() const { return q_.toRotationMatrix(); }
-
-void SINS::SetInitStatus(bool initialized) { initialized_ = initialized; }
 }  // namespace sins

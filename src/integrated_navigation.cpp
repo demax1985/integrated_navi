@@ -17,6 +17,9 @@ IntegratedNavigation::IntegratedNavigation()
       nh_.subscribe("/IMU_data", 1, &IntegratedNavigation::ImuCallback, this);
   gnss_sub_ =
       nh_.subscribe("/gnss_data", 1, &IntegratedNavigation::GnssCallback, this);
+  outfile_.open("result.txt");
+  outfile_ << "pitch, roll, yaw, ve, vn, vu, lat, lon, alt, gyrobias, accebias"
+           << std::endl;
 }
 
 IntegratedNavigation::IntegratedNavigation(std::shared_ptr<SINS> sins,
@@ -37,6 +40,9 @@ IntegratedNavigation::IntegratedNavigation(std::shared_ptr<SINS> sins,
       nh_.subscribe("/IMU_data", 1, &IntegratedNavigation::ImuCallback, this);
   gnss_sub_ =
       nh_.subscribe("/gnss_data", 1, &IntegratedNavigation::GnssCallback, this);
+  outfile_.open("result.txt");
+  outfile_ << "pitch, roll, yaw, ve, vn, vu, lat, lon, alt, gyrobias, accebias"
+           << std::endl;
   if (algo == kFilter) {
     pSINS_ = sins;
     pFilter_ = std::move(filter);
@@ -74,6 +80,9 @@ void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
       kf_predict_time_prev_ = pSINS_->UpdateTimestamp();
     }
   }
+  outfile_ << pSINS_->GetAttitude() << "  " << pSINS_->GetVelocity() << "  "
+           << pSINS_->GetPosition() << "  " << pSINS_->GetGyroBias() << "  "
+           << pSINS_->GetAcceBias() << std::endl;
 }
 void IntegratedNavigation::GnssCallback(
     const sensor_msgs::NavSatFixConstPtr& gnss_pos) {
@@ -83,12 +92,23 @@ void IntegratedNavigation::GnssCallback(
   double dt = timestamp - kf_predict_time_prev_;
   V3d Rk = {gnss_pos->position_covariance[0], gnss_pos->position_covariance[4],
             gnss_pos->position_covariance[8]};
+  int state_num = pFilter_->GetStateNumber();
+  int pos_index = pFilter_->GetPosIndex();
+  Eigen::MatrixXd Hk;
+  Hk.resize(state_num, 3);
+  Hk.block<3, 3>(0, pos_index) = Eigen::Matrix3d::Identity();
   if (dt > 0) {
     pFilter_->Predict(dt);
     kf_predict_time_prev_ = timestamp;
-    V3d Zk = gnss_.gnss_pos_ - pSINS_->GetPosition();
-    // pFilter_->MeasurementUpdate()
+    V3d Zk = pSINS_->GetPosition() - gnss_.gnss_pos_;
+    pFilter_->MeasurementUpdate(Zk, Hk, Rk);
+    pFilter_->FeedbackAllState();
   } else {
     dt *= -1;
+    V3d gnss_pos_extrapolated =
+        gnss_.gnss_pos_ + pSINS_->GetVelocity() * pSINS_->Mpv() * dt;
+    V3d Zk = pSINS_->GetPosition() - gnss_pos_extrapolated;
+    pFilter_->MeasurementUpdate(Zk, Hk, Rk);
+    pFilter_->FeedbackAllState();
   }
 }

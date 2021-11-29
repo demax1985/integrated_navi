@@ -7,6 +7,7 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/NavSatFix.h>
 
+#include <fstream>
 #include <memory>
 
 #include "filter/filter_base.h"
@@ -44,6 +45,8 @@ class IntegratedNavigation {
 
   ros::NodeHandle nh_;
 
+  std::ofstream outfile_;
+
   // static consts
   static const int kInitialAlignmentCount = 200;
   static constexpr double kKfPredictDt = 0.1;
@@ -59,6 +62,6 @@ class IntegratedNavigation {
   void GnssCallback(const sensor_msgs::NavSatFixConstPtr& gnss_pos);
 };
 
-IntegratedNavigation::~IntegratedNavigation() {}
+IntegratedNavigation::~IntegratedNavigation() { outfile_.close(); }
 
 #endif  // INCLUDE_INTEGRATED_NAVIGATION_H_
