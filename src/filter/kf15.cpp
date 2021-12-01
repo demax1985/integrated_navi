@@ -126,7 +126,7 @@ void KF15::FeedbackPosition() {
   V3d dpos = {state_(static_cast<int>(KfErrorState::kLat)),
               state_(static_cast<int>(KfErrorState::kLon)),
               state_(static_cast<int>(KfErrorState::kAlt))};
-  pSINS_->FeedbackVelocity(dpos);
+  pSINS_->FeedbackPosition(dpos);
   state_(static_cast<int>(KfErrorState::kLat)) = 0;
   state_(static_cast<int>(KfErrorState::kLon)) = 0;
   state_(static_cast<int>(KfErrorState::kAlt)) = 0;
@@ -135,6 +135,7 @@ void KF15::FeedbackGyroBias() {
   V3d gyro_bias = {state_(static_cast<int>(KfErrorState::kGbx)),
                    state_(static_cast<int>(KfErrorState::kGby)),
                    state_(static_cast<int>(KfErrorState::kGbz))};
+  std::cout << "feedback gyro bias is: " << gyro_bias << std::endl;
   pSINS_->FeedbackGyroBias(gyro_bias);
   state_(static_cast<int>(KfErrorState::kGbx)) = 0;
   state_(static_cast<int>(KfErrorState::kGby)) = 0;
@@ -144,7 +145,8 @@ void KF15::FeedbackAcceBias() {
   V3d acce_bias = {state_(static_cast<int>(KfErrorState::kAbx)),
                    state_(static_cast<int>(KfErrorState::kAby)),
                    state_(static_cast<int>(KfErrorState::kAbz))};
-  pSINS_->FeedbackVelocity(acce_bias);
+  std::cout << "feedback acce bias is: " << acce_bias << std::endl;
+  pSINS_->FeedbackAcceBias(acce_bias);
   state_(static_cast<int>(KfErrorState::kAbx)) = 0;
   state_(static_cast<int>(KfErrorState::kAby)) = 0;
   state_(static_cast<int>(KfErrorState::kAbz)) = 0;

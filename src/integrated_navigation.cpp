@@ -56,6 +56,8 @@ void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
               imu->angular_velocity.z};
   V3d acce = {imu->linear_acceleration.x, imu->linear_acceleration.y,
               imu->linear_acceleration.z};
+  gyro -= pSINS_->GetGyroBias();
+  acce -= pSINS_->GetAcceBias();
   double timestamp = imu->header.stamp.toSec();
   imu_ = IMUData(gyro, acce, timestamp);
   if (!pSINS_->Initialized()) {
@@ -129,6 +131,9 @@ void IntegratedNavigation::GnssCallback(
     V3d Zk = pSINS_->GetPosition() - gnss_.gnss_pos_;
     pFilter_->MeasurementUpdate(Zk, Hk, Rk);
     pFilter_->FeedbackAllState();
+    // pFilter_->FeedbackAttitude();
+    // pFilter_->FeedbackVelocity();
+    // pFilter_->FeedbackPosition();
   } else {
     dt *= -1;
     V3d gnss_pos_extrapolated =
@@ -136,5 +141,8 @@ void IntegratedNavigation::GnssCallback(
     V3d Zk = pSINS_->GetPosition() - gnss_pos_extrapolated;
     pFilter_->MeasurementUpdate(Zk, Hk, Rk);
     pFilter_->FeedbackAllState();
+    // pFilter_->FeedbackAttitude();
+    // pFilter_->FeedbackVelocity();
+    // pFilter_->FeedbackPosition();
   }
 }

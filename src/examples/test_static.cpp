@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
   V3d ini_vn = vn + vn_error;
   V3d ini_pos = pos + pos_error;
   double ts = 0.01;
-  double n = 4;  // subsample number
+  double n = 1;  // subsample number
   double taug = 3600;
   double taua = 3600;
   std::shared_ptr<HPSINS> psins(
