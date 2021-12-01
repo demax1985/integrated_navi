@@ -55,6 +55,7 @@ SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts)
   Mvp_.setZero();
   Mpv_.setZero();
   Mpp_.setZero();
+  std::cout << "sins constructed, pos is: " << pos_ << std::endl;
 }
 
 }  // namespace sins

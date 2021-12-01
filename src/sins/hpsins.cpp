@@ -120,6 +120,7 @@ void HPSINS::Update(const IMUData& imu) {
   if (imus_.size() == num_samples_) {
     update_timestamp_ = imus_.back().Timestamp();
     dt_ = update_timestamp_ - pre_update_timestamp_;
+    if (dt_ > 0.1) return;
     ConeScullCompensation();
     ComputeWibAndFb();
     V3d extrapolated_pos, extrapolated_vn;
@@ -170,9 +171,17 @@ void HPSINS::ConeScullCompensation() {
   dvbm_.setZero();
   V3d cm(0, 0, 0), sm(0, 0, 0), wm(0, 0, 0),
       vm(0, 0, 0);  // attention initialized to zero
+
+  std::cout << "in ConeScullCompensation, num_samples is: " << num_samples_
+            << std::endl;
+
   for (int i = 0; i < num_samples_ - 1; i++) {
     cm += cone_scull_coeff_(num_samples_ - 2, i) * imus_.at(i).Gyro() * ts_;
     sm += cone_scull_coeff_(num_samples_ - 2, i) * imus_.at(i).Acce() * ts_;
+    std::cout << "in ConeScullCompensation, gyro is: " << imus_.at(i).Gyro()
+              << std::endl;
+    std::cout << "in ConeScullCompensation, acce is: " << imus_.at(i).Acce()
+              << std::endl;
   }
 
   std::for_each(imus_.begin(), imus_.end(),
@@ -187,6 +196,10 @@ void HPSINS::ConeScullCompensation() {
   dvbm_ += cm.cross(imus_.at(num_samples_ - 1).Acce() * ts_) +
            sm.cross(imus_.at(num_samples_ - 1).Gyro() * ts_);
   dvbm_ += 0.5 * wm.cross(vm);  // rot error compensation
+  dvbm_ += vm;
+
+  std::cout << "phim is: " << phim_ << std::endl;
+  std::cout << "dvbm is: " << dvbm_ << std::endl;
 }
 
 void HPSINS::UpdatePrevSINS() {

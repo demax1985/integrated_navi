@@ -3,6 +3,7 @@
 #define INCLUDE_SENSORS_GNSS_H_
 #include <Eigen/Core>
 using V3d = Eigen::Vector3d;
+using M3d = Eigen::Matrix3d;
 struct GnssData {
   struct GnssDop {
     double gdop;  // geometric dop

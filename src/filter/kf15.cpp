@@ -14,15 +14,22 @@ KF15::KF15(const Eigen::Matrix<double, 15, 1> &state,
 void KF15::Predict(double dt) {
   SetFk(dt);
   state_ = Fk_ * state_;
+  std::cout << "state after predict is: " << state_ << std::endl;
   Pk_ = Fk_ * Pk_ * Fk_.transpose() + Qt_ * dt;
+  std::cout << "Pk after predict is: " << Pk_ << std::endl;
 }
 
 void KF15::MeasurementUpdate(const Eigen::VectorXd Zk, const Eigen::MatrixXd Hk,
                              const Eigen::MatrixXd Rk) {
+  std::cout << "MeasurementUpdate starts: " << std::endl;
   auto Pxy = Pk_ * Hk.transpose();
+  std::cout << "Pxy is: " << Pxy << std::endl;
   auto Py0 = Hk * Pxy;
+  std::cout << "Py0 is: " << Py0 << std::endl;
   auto Py = Py0 + Rk;
+  std::cout << "Py is: " << Py << std::endl;
   auto innovation = Zk - Hk * state_;
+  std::cout << "innovation is: " << innovation << std::endl;
   auto Kk = Pxy * Py.inverse();
   std::cout << "Kk is: " << std::endl << Kk << std::endl;
   state_ += Kk * innovation;
