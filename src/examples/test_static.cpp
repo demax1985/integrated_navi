@@ -93,10 +93,11 @@ int main(int argc, char** argv) {
   tmppk << 10 * kDeg, 10 * kDeg, 10 * kDeg, 1, 1, 1, 10 / kRe, 10 / kRe, 10.0,
       75 * kDph, 75 * kDph, 75 * kDph, 10 * kMg, 10 * kMg, 10 * kMg;
   pk = tmppk.asDiagonal();
+  pk = pk * pk.transpose();
 
   Eigen::Matrix<double, 15, 1> tmpqt;
-  tmpqt << web(0), web(1), web(2), wdb(0), wdb(1), wdb(2), 0, 0, 0, 0, 0, 0, 0,
-      0, 0;
+  tmpqt << web(0) * web(0), web(1) * web(1), web(2) * web(2), wdb(0) * wdb(0),
+      wdb(1) * wdb(1), wdb(2) * wdb(2), 0, 0, 0, 0, 0, 0, 0, 0, 0;
   qt = tmpqt.asDiagonal();
   Eigen::Matrix<double, 15, 1> state;
   state.setZero();

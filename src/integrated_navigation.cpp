@@ -85,16 +85,6 @@ void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
       kf_predict_time_prev_ = pSINS_->UpdateTimestamp();
     }
   }
-  outfile_ << pSINS_->GetAttitude()(0) << "  " << pSINS_->GetAttitude()(1)
-           << "  " << pSINS_->GetAttitude()(2) << "  "
-           << pSINS_->GetVelocity()(0) << "  " << pSINS_->GetVelocity()(1)
-           << "  " << pSINS_->GetVelocity()(2) << "  "
-           << pSINS_->GetPosition()(0) << "  " << pSINS_->GetPosition()(1)
-           << "  " << pSINS_->GetPosition()(2) << "  "
-           << pSINS_->GetGyroBias()(0) << "  " << pSINS_->GetGyroBias()(1)
-           << "  " << pSINS_->GetGyroBias()(2) << "  "
-           << pSINS_->GetAcceBias()(0) << "  " << pSINS_->GetAcceBias()(1)
-           << "  " << pSINS_->GetAcceBias()(2) << std::endl;
 }
 void IntegratedNavigation::GnssCallback(
     const sensor_msgs::NavSatFixConstPtr& gnss_pos) {
@@ -145,4 +135,16 @@ void IntegratedNavigation::GnssCallback(
     // pFilter_->FeedbackVelocity();
     // pFilter_->FeedbackPosition();
   }
+  outfile_ << pSINS_->GetAttitude()(0) << "  " << pSINS_->GetAttitude()(1)
+           << "  " << pSINS_->GetAttitude()(2) << "  "
+           << pSINS_->GetVelocity()(0) << "  " << pSINS_->GetVelocity()(1)
+           << "  " << pSINS_->GetVelocity()(2) << "  "
+           << pSINS_->GetPosition()(0) << "  " << pSINS_->GetPosition()(1)
+           << "  " << pSINS_->GetPosition()(2) << "  "
+           << pSINS_->GetGyroBias()(0) * 57.3 * 3600 << "  "
+           << pSINS_->GetGyroBias()(1) * 57.3 * 3600 << "  "
+           << pSINS_->GetGyroBias()(2) * 57.3 * 3600 << "  "
+           << pSINS_->GetAcceBias()(0) * 100 << "  "
+           << pSINS_->GetAcceBias()(1) * 100 << "  "
+           << pSINS_->GetAcceBias()(2) * 100 << std::endl;
 }
