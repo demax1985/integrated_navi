@@ -55,12 +55,16 @@ class SINS {
   const V3d& GetGyroBias() const { return gyro_bias_; }
   const V3d& GetAcceBias() const { return acce_bias_; }
   const M3d GetRotationMatrix() const { return q_.toRotationMatrix(); }
+  const Eigen::Quaterniond& GetQuaternion() const { return q_; }
 
   void SetInitStatus(bool initialized) { initialized_ = initialized; }
   bool Initialized() { return initialized_; }
   double UpdateTimestamp() { return update_timestamp_; }
   void SetGyroBias(const V3d& gyrobias) { gyro_bias_ = gyrobias; }
   void SetAcceBias(const V3d& accebias) { acce_bias_ = accebias; }
+  void SetPreUpdateTime(double timestamp) { pre_update_timestamp_ = timestamp; }
+
+  virtual void UpdatePrevSINS() { return; }
 
  protected:
   bool initialized_;  // if initial alignment is completed

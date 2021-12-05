@@ -45,6 +45,9 @@ HPSINS::HPSINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts,
   pos_middle_ = pos_;
   vn_middle_ = vn_;
   q_middle_ = q_;
+  std::cout << "qua of hpsins construct is: " << std::endl;
+  std::cout << q_.w() << "  " << q_.x() << "  " << q_.y() << "  " << q_.z()
+            << std::endl;
   cone_scull_coeff_ << 2 / 3, 0, 0, 0, 0, 9 / 20, 27 / 20, 0, 0, 0, 54 / 105,
       92 / 105, 214 / 105, 0, 0, 250 / 504, 525 / 504, 650 / 504, 1375 / 504, 0,
       2315 / 4620, 4558 / 4620, 7296 / 4620, 7834 / 4620, 15797 / 4620;
@@ -120,9 +123,14 @@ void HPSINS::Update(const IMUData& imu) {
   if (imus_.size() == num_samples_) {
     update_timestamp_ = imus_.back().Timestamp();
     dt_ = update_timestamp_ - pre_update_timestamp_;
-    if (dt_ > 0.1) return;
+    if (dt_ > 0.1) {
+      pre_update_timestamp_ = update_timestamp_;
+      return;
+    }
     ConeScullCompensation();
     ComputeWibAndFb();
+    std::cout << "fb_middle_ is: " << std::endl;
+    std::cout << fb_middle_ << std::endl;
     V3d extrapolated_pos, extrapolated_vn;
     std::tie(extrapolated_pos, extrapolated_vn) =
         ExtrapolatePosAndVn(dt_ / 2.0);
@@ -130,6 +138,7 @@ void HPSINS::Update(const IMUData& imu) {
     UpdateAttitude();
     UpdateVelocity();
     UpdatePosition();
+    UpdatePrevSINS();
     pre_update_timestamp_ = update_timestamp_;
   }
 }
@@ -143,7 +152,10 @@ void HPSINS::UpdateAttitude() {
   Eigen::Quaterniond q_n_in = RotationVector2Quaternion(EarthWnin() * dt_);
   Eigen::Quaterniond q_b_ib = RotationVector2Quaternion(wib_middle_ * dt_);
   q_ = q_n_in * q_ * q_b_ib;
-
+  q_.normalize();
+  // std::cout << "atti update, qua is: " << std::endl;
+  // std::cout << q_.w() << "  " << q_.x() << "  " << q_.y() << "  " << q_.z()
+  //           << std::endl;
   Eigen::Quaterniond q_n_in_middle =
       RotationVector2Quaternion(EarthWnin() * dt_ / 2.0);
   Eigen::Quaterniond q_b_ib_middle =
@@ -172,16 +184,16 @@ void HPSINS::ConeScullCompensation() {
   V3d cm(0, 0, 0), sm(0, 0, 0), wm(0, 0, 0),
       vm(0, 0, 0);  // attention initialized to zero
 
-  std::cout << "in ConeScullCompensation, num_samples is: " << num_samples_
-            << std::endl;
+  // std::cout << "in ConeScullCompensation, num_samples is: " << num_samples_
+  //           << std::endl;
 
   for (int i = 0; i < num_samples_ - 1; i++) {
     cm += cone_scull_coeff_(num_samples_ - 2, i) * imus_.at(i).Gyro() * ts_;
     sm += cone_scull_coeff_(num_samples_ - 2, i) * imus_.at(i).Acce() * ts_;
-    std::cout << "in ConeScullCompensation, gyro is: " << imus_.at(i).Gyro()
-              << std::endl;
-    std::cout << "in ConeScullCompensation, acce is: " << imus_.at(i).Acce()
-              << std::endl;
+    // std::cout << "in ConeScullCompensation, gyro is: " << imus_.at(i).Gyro()
+    //           << std::endl;
+    // std::cout << "in ConeScullCompensation, acce is: " << imus_.at(i).Acce()
+    //           << std::endl;
   }
 
   std::for_each(imus_.begin(), imus_.end(),
@@ -198,8 +210,8 @@ void HPSINS::ConeScullCompensation() {
   dvbm_ += 0.5 * wm.cross(vm);  // rot error compensation
   dvbm_ += vm;
 
-  std::cout << "phim is: " << phim_ << std::endl;
-  std::cout << "dvbm is: " << dvbm_ << std::endl;
+  // std::cout << "phim is: " << phim_ << std::endl;
+  // std::cout << "dvbm is: " << dvbm_ << std::endl;
 }
 
 void HPSINS::UpdatePrevSINS() {
@@ -270,11 +282,13 @@ void HPSINS::SetErrModelMatrix() {
 }
 
 void HPSINS::InitialLevelAlignment(const V3d& mean_acce_in_b_fram) {
-  double pitch = asin(mean_acce_in_b_fram(1) / EarthG0());
-  double roll = atan2(-mean_acce_in_b_fram(0), mean_acce_in_b_fram(2));
-  att_ = {pitch, roll, 0};
-  q_ = Euler2Quaternion(att_);
-  q_prev_ = q_;
+  // double pitch = asin(mean_acce_in_b_fram(1) / EarthG0());
+  // double roll = atan2(-mean_acce_in_b_fram(0), mean_acce_in_b_fram(2));
+  // att_ = {pitch, roll, 0};
+  // q_ = Euler2Quaternion(att_);
+  // q_prev_ = q_;
+  fb_ = mean_acce_in_b_fram;
+  fb_prev_ = mean_acce_in_b_fram;
   SetInitStatus(true);
 }
 

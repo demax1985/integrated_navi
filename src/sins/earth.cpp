@@ -33,7 +33,8 @@ Earth::Earth(/* args */) {
 Earth::Earth(const V3d& pos, const V3d& vn) {
   pos_ = pos;
   vn_ = vn;
-
+  std::cout << "vn in earth construct is: " << std::endl;
+  std::cout << vn_ << std::endl;
   Re_ = 6378137.0;
   double f = 1.0 / 298.257;
   double e = sqrt(2 * f - f * f);
@@ -57,6 +58,12 @@ Earth::Earth(const V3d& pos, const V3d& vn) {
   wnien_ = wnie_ + wnin_;
   gn_ = {0.0, 0.0, -g_};
   gcc_ = gn_ - wnien_.cross(vn_);
+  std::cout << "wnie_ in earth construct is: " << std::endl;
+  std::cout << wnie_ << std::endl;
+  std::cout << "wnen_ in earth construct is: " << std::endl;
+  std::cout << wnen_ << std::endl;
+  std::cout << "wnin_ in earth construct is: " << std::endl;
+  std::cout << wnin_ << std::endl;
 }
 
 void Earth::EarthUpdate(const V3d& pos, const V3d& vn) {

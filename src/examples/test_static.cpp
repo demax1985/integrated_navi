@@ -20,8 +20,9 @@ const double kMg = 9.7803267714 * 0.001;
 const double kUg = 9.7803267714 * 1.0e-6;
 const double kDph = kDeg / 3600.0;
 const double kRe = 6378137.0;
-const double kDpsh = kDeg / sqrt(3600.0);
+const double kDpsh = kDeg / 60.0;
 const double kUgpsHz = kUg;
+const double kMin = kDeg / 60.0;
 
 ros::Publisher imu_pub, gnss_pub;
 
@@ -63,20 +64,26 @@ int main(int argc, char** argv) {
   gnss_pub = nh.advertise<sensor_msgs::NavSatFix>("/gnss_data", 1000);
 
   // test kf15
-  V3d att = {0, 0, 0};        // true att
-  V3d vn = {0, 0, 0};         // true vn
-  V3d pos = {0.6, 2.4, 100};  // true pos
+  V3d att = {0, 0, 0};                     // true att
+  V3d vn = {0, 0, 0};                      // true vn
+  V3d pos = {34 * kDeg, 108 * kDeg, 380};  // true pos
 
-  V3d att_error = {0.1, 0.1, 1.0};
+  V3d att_error = {100.0 * kMin, 100.0 * kMin, 100.0 * kMin};
   V3d vn_error = {0.1, 0.1, 0.1};
-  V3d pos_error = {0, 0, 0};
+  V3d pos_error = {1.0 / kRe, 1.0 / kRe, 3};
 
-  V3d eb = {75.0 * kDph, 75.0 * kDph, 75.0 * kDph};
-  V3d db = {10.0 * kMg, 10.0 * kMg, 10.0 * kMg};
-  V3d web = {0.01 * kDpsh, 0.01 * kDpsh, 0.01 * kDpsh};
-  V3d wdb = {100 * kUgpsHz, 100 * kUgpsHz, 100 * kUgpsHz};
+  V3d eb = {30.0 * kDph, 30.0 * kDph, 30.0 * kDph};
+  V3d db = {1.0 * kMg, 1.0 * kMg, 1.0 * kMg};
+  V3d web = {0.001 * kDpsh, 0.001 * kDpsh, 0.001 * kDpsh};
+  V3d wdb = {5 * kUgpsHz, 5 * kUgpsHz, 5 * kUgpsHz};
 
-  V3d ini_att = att + att_error;
+  // V3d eb{0 * kDph, 0 * kDph, 1 * kDph};
+  // V3d db{0, 0, 0};
+  // V3d web{0, 0, 0};
+  // V3d wdb{0, 0, 0};
+  Eigen::Quaterniond init_q = RotationVector2Quaternion(-att_error);
+  V3d ini_att = Quaternion2Euler(init_q);
+  std::cout << "initial att is: " << ini_att << std::endl;
   V3d ini_vn = vn + vn_error;
   V3d ini_pos = pos + pos_error;
   double ts = 0.01;
@@ -90,22 +97,24 @@ int main(int argc, char** argv) {
   Eigen::Matrix<double, 15, 15> pk;
   Eigen::Matrix<double, 15, 15> qt;
   Eigen::Matrix<double, 15, 1> tmppk;
-  tmppk << 10 * kDeg, 10 * kDeg, 10 * kDeg, 1, 1, 1, 10 / kRe, 10 / kRe, 10.0,
-      75 * kDph, 75 * kDph, 75 * kDph, 10 * kMg, 10 * kMg, 10 * kMg;
+  tmppk << att_error, vn_error, pos_error, eb, db;
   pk = tmppk.asDiagonal();
   pk = pk * pk.transpose();
+  std::cout << "initial pk is set to : " << std::endl;
+  std::cout << pk << std::endl;
 
   Eigen::Matrix<double, 15, 1> tmpqt;
   tmpqt << web(0) * web(0), web(1) * web(1), web(2) * web(2), wdb(0) * wdb(0),
       wdb(1) * wdb(1), wdb(2) * wdb(2), 0, 0, 0, 0, 0, 0, 0, 0, 0;
   qt = tmpqt.asDiagonal();
+  std::cout << "initial qt is set to : " << std::endl;
+  std::cout << qt << std::endl;
   Eigen::Matrix<double, 15, 1> state;
   state.setZero();
 
   psins->SetErrModelMatrix();
   Eigen::Matrix3d Rk;
-  V3d tmprk(0.1, 0.1, 1);
-  tmprk = psins->Mpv() * tmprk;
+  V3d tmprk = pos_error;
   tmprk = {tmprk(0) * tmprk(0), tmprk(1) * tmprk(1), tmprk(2) * tmprk(2)};
   //   std::cout.precision(10);
 

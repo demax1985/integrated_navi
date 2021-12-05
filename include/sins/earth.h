@@ -4,6 +4,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
+#include <iostream>
 using V3d = Eigen::Vector3d;
 class Earth {
  private:

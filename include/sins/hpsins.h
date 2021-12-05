@@ -74,7 +74,7 @@ class HPSINS : public SINS {
   double EarthG0() const;
 
   void ConeScullCompensation();
-  void UpdatePrevSINS();
+  void UpdatePrevSINS() override;
   const V3d Vn2DeltaPos(const V3d& vn, double dt) const;
   void ComputeWibAndFb();
   std::tuple<V3d, V3d> ExtrapolatePosAndVn(double dt);

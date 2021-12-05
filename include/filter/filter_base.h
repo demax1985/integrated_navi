@@ -34,6 +34,7 @@ class FilterBase {
   virtual int GetAcceBiasIndex() { return 0; }
 
   int GetStateNumber() { return state_.rows(); }
+  const Eigen::VectorXd& GetState() const { return state_; }
 
  protected:
   bool converged_;

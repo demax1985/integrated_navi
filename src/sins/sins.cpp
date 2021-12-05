@@ -55,6 +55,9 @@ SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts)
   Mvp_.setZero();
   Mpv_.setZero();
   Mpp_.setZero();
+  std::cout << "qua of sins construct is: " << std::endl;
+  std::cout << q_.w() << "  " << q_.x() << "  " << q_.y() << "  " << q_.z()
+            << std::endl;
   std::cout << "sins constructed, pos is: " << pos_ << std::endl;
 }
 

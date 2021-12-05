@@ -46,6 +46,13 @@ IntegratedNavigation::IntegratedNavigation(std::shared_ptr<SINS> sins,
   outfile_ << "pitch, roll, yaw, ve, vn, vu, lat, lon, alt, gyrobias, accebias"
            << std::endl;
   pSINS_ = sins;
+  Eigen::Quaterniond qua;
+  qua = pSINS_->GetQuaternion();
+  std::cout << "qua of integrated navigation construct is: " << std::endl;
+  std::cout << qua.w() << "  " << qua.x() << "  " << qua.y() << "  " << qua.z()
+            << std::endl;
+  std::cout << "cnb is: " << std::endl;
+  std::cout << pSINS_->GetRotationMatrix() << std::endl;
   std::cout << "IntegratedNavigation constructed, sins pos is: "
             << pSINS_->GetPosition() << std::endl;
   //   pFilter_ = std::move(filter);
@@ -56,8 +63,8 @@ void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
               imu->angular_velocity.z};
   V3d acce = {imu->linear_acceleration.x, imu->linear_acceleration.y,
               imu->linear_acceleration.z};
-  gyro -= pSINS_->GetGyroBias();
-  acce -= pSINS_->GetAcceBias();
+  // gyro -= pSINS_->GetGyroBias();
+  // acce -= pSINS_->GetAcceBias();
   double timestamp = imu->header.stamp.toSec();
   imu_ = IMUData(gyro, acce, timestamp);
   if (!pSINS_->Initialized()) {
@@ -67,7 +74,7 @@ void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
       if (initial_alignment_count_++ == kInitialAlignmentCount) {
         mean_acce_in_b_fram_ /= initial_alignment_count_;
         mean_gyro_static_ /= initial_alignment_count_;
-        pSINS_->SetGyroBias(mean_gyro_static_);
+        // pSINS_->SetGyroBias(mean_gyro_static_);
         pSINS_->InitialLevelAlignment(mean_acce_in_b_fram_);
         pSINS_->SetInitStatus(true);
         kf_predict_time_prev_ = timestamp;
@@ -99,9 +106,10 @@ void IntegratedNavigation::GnssCallback(
                gnss_pos->position_covariance[4],
                gnss_pos->position_covariance[8]};
   M3d Rk = tmpRk.asDiagonal();
-
+  std::cout.precision(10);
   std::cout << " gnss pose is: " << gnss_.gnss_pos_ << std::endl;
   std::cout << " sins pose is: " << pSINS_->GetPosition() << std::endl;
+  std::cout << " dt is: " << dt << std::endl;
 
   int state_num = pFilter_->GetStateNumber();
   int pos_index = pFilter_->GetPosIndex();
@@ -113,27 +121,30 @@ void IntegratedNavigation::GnssCallback(
   Hk.resize(3, state_num);
 
   Hk.block<3, 3>(0, pos_index) = Eigen::Matrix3d::Identity();
-  std::cout << "Hk is: " << Hk << std::endl;
-  std::cout << "dt of gnss is: " << dt << std::endl;
+  // std::cout << "Hk is: " << Hk << std::endl;
+  // std::cout << "dt of gnss is: " << dt << std::endl;
   if (dt > 0) {
     pFilter_->Predict(dt);
     kf_predict_time_prev_ = timestamp;
     V3d Zk = pSINS_->GetPosition() - gnss_.gnss_pos_;
     pFilter_->MeasurementUpdate(Zk, Hk, Rk);
-    pFilter_->FeedbackAllState();
-    // pFilter_->FeedbackAttitude();
-    // pFilter_->FeedbackVelocity();
-    // pFilter_->FeedbackPosition();
+    // pFilter_->FeedbackAllState();
+    pSINS_->SetPreUpdateTime(timestamp);
+    pSINS_->UpdatePrevSINS();
+    pFilter_->FeedbackAttitude();
+    pFilter_->FeedbackVelocity();
+    pFilter_->FeedbackPosition();
   } else {
-    dt *= -1;
     V3d gnss_pos_extrapolated =
-        gnss_.gnss_pos_ + pSINS_->Mpv() * pSINS_->GetVelocity() * dt;
+        gnss_.gnss_pos_ - pSINS_->Mpv() * pSINS_->GetVelocity() * dt;
     V3d Zk = pSINS_->GetPosition() - gnss_pos_extrapolated;
     pFilter_->MeasurementUpdate(Zk, Hk, Rk);
-    pFilter_->FeedbackAllState();
-    // pFilter_->FeedbackAttitude();
-    // pFilter_->FeedbackVelocity();
-    // pFilter_->FeedbackPosition();
+    // pFilter_->FeedbackAllState();
+    pSINS_->SetPreUpdateTime(timestamp);
+    pSINS_->UpdatePrevSINS();
+    pFilter_->FeedbackAttitude();
+    pFilter_->FeedbackVelocity();
+    pFilter_->FeedbackPosition();
   }
   outfile_ << pSINS_->GetAttitude()(0) << "  " << pSINS_->GetAttitude()(1)
            << "  " << pSINS_->GetAttitude()(2) << "  "
@@ -141,10 +152,10 @@ void IntegratedNavigation::GnssCallback(
            << "  " << pSINS_->GetVelocity()(2) << "  "
            << pSINS_->GetPosition()(0) << "  " << pSINS_->GetPosition()(1)
            << "  " << pSINS_->GetPosition()(2) << "  "
-           << pSINS_->GetGyroBias()(0) * 57.3 * 3600 << "  "
-           << pSINS_->GetGyroBias()(1) * 57.3 * 3600 << "  "
-           << pSINS_->GetGyroBias()(2) * 57.3 * 3600 << "  "
-           << pSINS_->GetAcceBias()(0) * 100 << "  "
-           << pSINS_->GetAcceBias()(1) * 100 << "  "
-           << pSINS_->GetAcceBias()(2) * 100 << std::endl;
+           << pFilter_->GetState()(9) * 57.3 * 3600 << "  "
+           << pFilter_->GetState()(10) * 57.3 * 3600 << "  "
+           << pFilter_->GetState()(11) * 57.3 * 3600 << "  "
+           << pFilter_->GetState()(12) * 100 << "  "
+           << pFilter_->GetState()(13) * 100 << "  "
+           << pFilter_->GetState()(14) * 100 << std::endl;
 }

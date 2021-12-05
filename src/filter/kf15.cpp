@@ -7,6 +7,13 @@ KF15::KF15(const Eigen::Matrix<double, 15, 1> &state,
            const Eigen::Matrix<double, 15, 15> &Q, std::shared_ptr<SINS> sins)
     : FilterBase(state, P, Q) {
   pSINS_ = sins;
+  Eigen::Quaterniond qua;
+  qua = pSINS_->GetQuaternion();
+  std::cout << "qua of kf15 construct is: " << std::endl;
+  std::cout << qua.w() << "  " << qua.x() << "  " << qua.y() << "  " << qua.z()
+            << std::endl;
+  std::cout << "cnb is: " << std::endl;
+  std::cout << pSINS_->GetRotationMatrix() << std::endl;
   Fk_.resize(15, 15);
   Fk_.setZero();
 }
@@ -14,22 +21,22 @@ KF15::KF15(const Eigen::Matrix<double, 15, 1> &state,
 void KF15::Predict(double dt) {
   SetFk(dt);
   state_ = Fk_ * state_;
-  std::cout << "state after predict is: " << state_ << std::endl;
+  // std::cout << "state after predict is: " << state_ << std::endl;
   Pk_ = Fk_ * Pk_ * Fk_.transpose() + Qt_ * dt;
-  std::cout << "Pk after predict is: " << Pk_ << std::endl;
+  // std::cout << "Pk after predict is: " << Pk_ << std::endl;
 }
 
 void KF15::MeasurementUpdate(const Eigen::VectorXd Zk, const Eigen::MatrixXd Hk,
                              const Eigen::MatrixXd Rk) {
-  std::cout << "MeasurementUpdate starts: " << std::endl;
+  // std::cout << "MeasurementUpdate starts: " << std::endl;
   auto Pxy = Pk_ * Hk.transpose();
-  std::cout << "Pxy is: " << Pxy << std::endl;
+  // std::cout << "Pxy is: " << Pxy << std::endl;
   auto Py0 = Hk * Pxy;
-  std::cout << "Py0 is: " << Py0 << std::endl;
+  // std::cout << "Py0 is: " << Py0 << std::endl;
   auto Py = Py0 + Rk;
-  std::cout << "Py is: " << Py << std::endl;
+  // std::cout << "Py is: " << Py << std::endl;
   auto innovation = Zk - Hk * state_;
-  std::cout << "innovation is: " << innovation << std::endl;
+  // std::cout << "innovation is: " << innovation << std::endl;
   auto Kk = Pxy * Py.inverse();
   std::cout << "Kk is: " << std::endl << Kk << std::endl;
   state_ += Kk * innovation;
@@ -53,8 +60,18 @@ void KF15::SetFk(double dt) {
                  static_cast<int>(KfErrorState::kGbx)) =
       -pSINS_->GetRotationMatrix();
 
+  // std::cout << "cnb is: " << std::endl;
+  // std::cout << pSINS_->GetRotationMatrix() << std::endl;
+  // std::cout << "qua is: " << std::endl;
+  // Eigen::Quaterniond qua = pSINS_->GetQuaternion();
+  // std::cout << qua.w() << "  " << qua.x() << "  " << qua.y() << "  " <<
+  // qua.z()
+  //           << std::endl;
+
   Ft.block<3, 3>(static_cast<int>(KfErrorState::kVe),
                  static_cast<int>(KfErrorState::kPitch)) = pSINS_->Mva();
+  // std::cout << "Mva is: " << std::endl;
+  // std::cout << pSINS_->Mva() << std::endl;
   Ft.block<3, 3>(static_cast<int>(KfErrorState::kVe),
                  static_cast<int>(KfErrorState::kVe)) = pSINS_->Mvv();
   Ft.block<3, 3>(static_cast<int>(KfErrorState::kVe),
@@ -76,9 +93,15 @@ void KF15::SetFk(double dt) {
   Eigen::DiagonalMatrix<double, 6> tauGA = tau.asDiagonal();
   Ft.block<6, 6>(static_cast<int>(KfErrorState::kGbx),
                  static_cast<int>(KfErrorState::kGbx)) = tauGA;
+  // std::cout.precision(6);
+  // std::cout << "Ft is: " << std::endl << Ft << std::endl;
   Ft *= dt;
-  Fk_ = Ft.exp();
-  std::cout << "Fk is: " << std::endl << Fk_ << std::endl;
+  Eigen::Matrix<double, 15, 15> I15;
+  I15.setIdentity();
+  Fk_ = I15 + Ft;
+  // Fk_ = Ft.exp();
+  std::cout.precision(6);
+  std::cout << "Ft is: " << std::endl << Ft << std::endl;
 }
 
 void KF15::SetPkPositiveSymmetric() {
@@ -90,7 +113,7 @@ void KF15::SetPkPositiveSymmetric() {
     }
   // TODO(demax): the following code maybe wrong
   Pk_ = (Pk_ + Pk_.transpose()) / 2.0;
-  std::cout << "Pk is: " << std::endl << Pk_ << std::endl;
+  // std::cout << "Pk is: " << std::endl << Pk_ << std::endl;
 }
 
 // TODO(demax): coding later
