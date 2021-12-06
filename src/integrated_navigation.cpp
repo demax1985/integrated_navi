@@ -106,10 +106,10 @@ void IntegratedNavigation::GnssCallback(
                gnss_pos->position_covariance[4],
                gnss_pos->position_covariance[8]};
   M3d Rk = tmpRk.asDiagonal();
-  std::cout.precision(10);
-  std::cout << " gnss pose is: " << gnss_.gnss_pos_ << std::endl;
-  std::cout << " sins pose is: " << pSINS_->GetPosition() << std::endl;
-  std::cout << " dt is: " << dt << std::endl;
+  // std::cout.precision(10);
+  // std::cout << " gnss pose is: " << gnss_.gnss_pos_ << std::endl;
+  // std::cout << " sins pose is: " << pSINS_->GetPosition() << std::endl;
+  // std::cout << " dt is: " << dt << std::endl;
 
   int state_num = pFilter_->GetStateNumber();
   int pos_index = pFilter_->GetPosIndex();
@@ -130,7 +130,7 @@ void IntegratedNavigation::GnssCallback(
     pFilter_->MeasurementUpdate(Zk, Hk, Rk);
     // pFilter_->FeedbackAllState();
     pSINS_->SetPreUpdateTime(timestamp);
-    pSINS_->UpdatePrevSINS();
+    // pSINS_->UpdatePrevSINS();
     pFilter_->FeedbackAttitude();
     pFilter_->FeedbackVelocity();
     pFilter_->FeedbackPosition();
@@ -141,7 +141,7 @@ void IntegratedNavigation::GnssCallback(
     pFilter_->MeasurementUpdate(Zk, Hk, Rk);
     // pFilter_->FeedbackAllState();
     pSINS_->SetPreUpdateTime(timestamp);
-    pSINS_->UpdatePrevSINS();
+    // pSINS_->UpdatePrevSINS();
     pFilter_->FeedbackAttitude();
     pFilter_->FeedbackVelocity();
     pFilter_->FeedbackPosition();

@@ -124,8 +124,8 @@ void HPSINS::Update(const IMUData& imu) {
     }
     ConeScullCompensation();
     ComputeWibAndFb();
-    std::cout << "fb_middle_ is: " << std::endl;
-    std::cout << fb_middle_ << std::endl;
+    // std::cout << "fb_middle_ is: " << std::endl;
+    // std::cout << fb_middle_ << std::endl;
     V3d extrapolated_pos, extrapolated_vn;
     std::tie(extrapolated_pos, extrapolated_vn) =
         ExtrapolatePosAndVn(dt_ / 2.0);

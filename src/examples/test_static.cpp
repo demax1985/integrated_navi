@@ -90,13 +90,15 @@ int main(int argc, char** argv) {
   V3d ini_pos = pos + pos_error;
   double ts = 0.01;
   double n = 1;  // subsample number
-  double taug = 3600;
-  double taua = 3600;
-  // std::shared_ptr<HPSINS> psins(
-  //     new HPSINS(ini_att, ini_vn, ini_pos, ts, n, taug, taua));
+  double taug = 360000;
+  double taua = 360000;
+  std::shared_ptr<HPSINS> psins(
+      new HPSINS(ini_att, ini_vn, ini_pos, ts, n, taug, taua));
 
-  std::shared_ptr<LPSINS> psins(
-      new LPSINS(ini_att, ini_vn, ini_pos, ts, taug, taua));
+  std::unique_ptr<SINS> psins_pre(new HPSINS(*psins));
+
+  // std::shared_ptr<LPSINS> psins(
+  //     new LPSINS(ini_att, ini_vn, ini_pos, ts, taug, taua));
 
   // set kf
   Eigen::Matrix<double, 15, 15> pk;
@@ -126,7 +128,8 @@ int main(int argc, char** argv) {
   Rk = tmprk.asDiagonal();
   std::cout << "rk is: " << Rk << std::endl;
 
-  std::unique_ptr<KF15> pkf15(new KF15(state, pk, qt, psins));
+  std::unique_ptr<KF15> pkf15(
+      new KF15(state, pk, qt, psins, std::move(psins_pre)));
   IntegratedNavigation estimate(psins, std::move(pkf15));
 
   ros::Rate rate(100);
