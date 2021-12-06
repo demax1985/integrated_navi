@@ -142,6 +142,7 @@ set(SOURCE_LIST
    src/sensors/imu.cpp
    src/sins/earth.cpp
    src/sins/hpsins.cpp
+   src/sins/lpsins.cpp
    src/sins/sins.cpp
    src/common/global.cpp
    src/filter/filter_base.cpp

@@ -20,7 +20,8 @@ using M3d = Eigen::Matrix3d;
 class SINS {
  public:
   SINS();
-  SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts);
+  SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts,
+       double taug, double taua);
   virtual ~SINS() {}
   virtual void Update(const IMUData& imu) = 0;
   virtual void UpdateAttitude() = 0;
@@ -72,6 +73,7 @@ class SINS {
   V3d vn_, vn_prev_;
   V3d pos_;
   V3d an_;
+  V3d fb_, wib_;
   Eigen::Quaterniond q_, q_prev_;
   double update_timestamp_, pre_update_timestamp_, dt_;
   // ts_: imu data interval
@@ -81,6 +83,7 @@ class SINS {
 
   // error model coefficient
   M3d Maa_, Mav_, Map_, Mva_, Mvv_, Mvp_, Mpv_, Mpp_;
+  double tauG_, tauA_;
 };
 }  // namespace sins
 #endif  // INCLUDE_SINS_SINS_H_

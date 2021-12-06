@@ -10,6 +10,8 @@ SINS::SINS()
       ts_(0.01),
       current_imu_timestamp_(0.0),
       prev_imu_timestamp_(0.0),
+      tauG_(3600.0),
+      tauA_(3600.0),
       initialized_(false) {
   att_.setZero();
   vn_.setZero();
@@ -20,6 +22,8 @@ SINS::SINS()
   q_prev_.setIdentity();
   gyro_bias_.setZero();
   acce_bias_.setZero();
+  fb_.setZero();
+  wib_.setZero();
   Maa_.setZero();
   Mav_.setZero();
   Map_.setZero();
@@ -30,7 +34,8 @@ SINS::SINS()
   Mpp_.setZero();
 }
 
-SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts)
+SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts,
+           double taug, double taua)
     : att_(att),
       vn_(vn),
       vn_prev_(vn),
@@ -41,12 +46,16 @@ SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts)
       ts_(ts),
       current_imu_timestamp_(0.0),
       prev_imu_timestamp_(0.0),
+      tauG_(taug),
+      tauA_(taua),
       initialized_(false) {
   q_ = Euler2Quaternion(att_);
   q_prev_ = q_;
   gyro_bias_.setZero();
   acce_bias_.setZero();
   an_.setZero();
+  fb_.setZero();
+  wib_.setZero();
   Maa_.setZero();
   Mav_.setZero();
   Map_.setZero();

@@ -38,12 +38,12 @@ void KF15::MeasurementUpdate(const Eigen::VectorXd Zk, const Eigen::MatrixXd Hk,
   auto innovation = Zk - Hk * state_;
   // std::cout << "innovation is: " << innovation << std::endl;
   auto Kk = Pxy * Py.inverse();
-  std::cout << "Kk is: " << std::endl << Kk << std::endl;
+  // std::cout << "Kk is: " << std::endl << Kk << std::endl;
   state_ += Kk * innovation;
   Pk_ -= Kk * Hk * Pk_;
   SetPkPositiveSymmetric();
-  std::cout << "after measurement update, state is: " << std::endl
-            << state_ << std::endl;
+  // std::cout << "after measurement update, state is: " << std::endl
+  //           << state_ << std::endl;
 }
 
 void KF15::SetFk(double dt) {
@@ -100,8 +100,8 @@ void KF15::SetFk(double dt) {
   I15.setIdentity();
   Fk_ = I15 + Ft;
   // Fk_ = Ft.exp();
-  std::cout.precision(6);
-  std::cout << "Ft is: " << std::endl << Ft << std::endl;
+  // std::cout.precision(6);
+  // std::cout << "Ft is: " << std::endl << Ft << std::endl;
 }
 
 void KF15::SetPkPositiveSymmetric() {

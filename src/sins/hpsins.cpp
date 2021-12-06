@@ -3,7 +3,7 @@
 
 namespace sins {
 
-HPSINS::HPSINS() : SINS(), tauG_(3600.0), tauA_(3600.0) {
+HPSINS::HPSINS() : SINS() {
   imus_.clear();
   eth_ = std::unique_ptr<Earth>(new Earth());
   phim_.setZero();
@@ -13,7 +13,6 @@ HPSINS::HPSINS() : SINS(), tauG_(3600.0), tauA_(3600.0) {
   wib_.setZero();
   wib_prev_.setZero();
   wib_middle_.setZero();
-  fb_.setZero();
   fb_prev_.setZero();
   fb_middle_.setZero();
   pos_middle_.setZero();
@@ -26,10 +25,7 @@ HPSINS::HPSINS() : SINS(), tauG_(3600.0), tauA_(3600.0) {
 
 HPSINS::HPSINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts,
                const int num_samples, double tauG, double tauA)
-    : SINS(att, vn, pos, ts),
-      num_samples_(num_samples),
-      tauG_(tauG),
-      tauA_(tauA) {
+    : SINS(att, vn, pos, ts, tauG, tauA), num_samples_(num_samples) {
   eth_ = std::unique_ptr<Earth>(new Earth(pos, vn));
   imus_.clear();
   phim_.setZero();
@@ -39,7 +35,6 @@ HPSINS::HPSINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts,
   wib_.setZero();
   wib_prev_.setZero();
   wib_middle_.setZero();
-  fb_.setZero();
   fb_prev_.setZero();
   fb_middle_.setZero();
   pos_middle_ = pos_;

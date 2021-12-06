@@ -11,9 +11,11 @@
 #include "integrated_navigation.h"
 #include "sensors/gnss.h"
 #include "sensors/imu.h"
+#include "sins/lpsins.h"
 
 using sins::HPSINS;
 using sins::KF15;
+using sins::LPSINS;
 
 const double kDeg = kPi / 180.0;
 const double kMg = 9.7803267714 * 0.001;
@@ -90,8 +92,11 @@ int main(int argc, char** argv) {
   double n = 1;  // subsample number
   double taug = 3600;
   double taua = 3600;
-  std::shared_ptr<HPSINS> psins(
-      new HPSINS(ini_att, ini_vn, ini_pos, ts, n, taug, taua));
+  // std::shared_ptr<HPSINS> psins(
+  //     new HPSINS(ini_att, ini_vn, ini_pos, ts, n, taug, taua));
+
+  std::shared_ptr<LPSINS> psins(
+      new LPSINS(ini_att, ini_vn, ini_pos, ts, taug, taua));
 
   // set kf
   Eigen::Matrix<double, 15, 15> pk;

@@ -17,15 +17,13 @@ class HPSINS : public SINS {
   int num_samples_;  // number of sub samples
   V3d phim_, phim_prev_;
   V3d dvbm_, dvbm_prev_;
-  V3d wib_, wib_prev_, wib_middle_;
-  V3d fb_, fb_prev_, fb_middle_;
+  V3d wib_prev_, wib_middle_;
+  V3d fb_prev_, fb_middle_;
   V3d pos_middle_, vn_middle_;
   Eigen::Quaterniond q_middle_;
   std::unique_ptr<Earth> eth_;
   std::vector<IMUData> imus_;
   Eigen::Matrix<double, 5, 5> cone_scull_coeff_;
-
-  double tauG_, tauA_;
 
  public:
   HPSINS(/* args */);
