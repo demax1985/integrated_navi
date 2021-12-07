@@ -65,8 +65,8 @@ void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
               imu->angular_velocity.z};
   V3d acce = {imu->linear_acceleration.x, imu->linear_acceleration.y,
               imu->linear_acceleration.z};
-  // gyro -= pSINS_->GetGyroBias();
-  // acce -= pSINS_->GetAcceBias();
+  gyro -= pSINS_->GetGyroBias();
+  acce -= pSINS_->GetAcceBias();
   double timestamp = imu->header.stamp.toSec();
   imu_ = IMUData(gyro, acce, timestamp);
   if (!pSINS_->Initialized()) {
@@ -76,7 +76,7 @@ void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
       if (initial_alignment_count_++ == kInitialAlignmentCount) {
         mean_acce_in_b_fram_ /= initial_alignment_count_;
         mean_gyro_static_ /= initial_alignment_count_;
-        // pSINS_->SetGyroBias(mean_gyro_static_);
+        pSINS_->SetGyroBias(mean_gyro_static_);
         pSINS_->InitialLevelAlignment(mean_acce_in_b_fram_);
         pSINS_->SetInitStatus(true);
         kf_predict_time_prev_ = timestamp;
@@ -148,10 +148,10 @@ void IntegratedNavigation::GnssCallback(
   std::cout << Zk(0) * 6378137 << "  " << Zk(1) * 6378137 << "  " << Zk(2)
             << std::endl;
   pFilter_->MeasurementUpdate(Zk, Hk, Rk);
-
-  pFilter_->FeedbackAttitude();
-  pFilter_->FeedbackVelocity();
-  pFilter_->FeedbackPosition();
+  pFilter_->FeedbackAllState();
+  // pFilter_->FeedbackAttitude();
+  // pFilter_->FeedbackVelocity();
+  // pFilter_->FeedbackPosition();
 
   outfile_ << pSINS_->GetAttitude()(0) << "  " << pSINS_->GetAttitude()(1)
            << "  " << pSINS_->GetAttitude()(2) << "  "
@@ -159,10 +159,16 @@ void IntegratedNavigation::GnssCallback(
            << "  " << pSINS_->GetVelocity()(2) << "  "
            << pSINS_->GetPosition()(0) << "  " << pSINS_->GetPosition()(1)
            << "  " << pSINS_->GetPosition()(2) << "  "
-           << pFilter_->GetState()(9) * 57.3 * 3600 << "  "
-           << pFilter_->GetState()(10) * 57.3 * 3600 << "  "
-           << pFilter_->GetState()(11) * 57.3 * 3600 << "  "
-           << pFilter_->GetState()(12) * 100 << "  "
-           << pFilter_->GetState()(13) * 100 << "  "
-           << pFilter_->GetState()(14) * 100 << std::endl;
+           << pSINS_->GetGyroBias()(0) * 57.3 * 3600 << "  "
+           << pSINS_->GetGyroBias()(1) * 57.3 * 3600 << "  "
+           << pSINS_->GetGyroBias()(2) * 57.3 * 3600 << "  "
+           << pSINS_->GetAcceBias()(0) * 100 << "  "
+           << pSINS_->GetAcceBias()(1) * 100 << "  "
+           << pSINS_->GetAcceBias()(2) * 100 << "  " << std::endl;
+  //  << pFilter_->GetState()(9) * 57.3 * 3600 << "  "
+  //  << pFilter_->GetState()(10) * 57.3 * 3600 << "  "
+  //  << pFilter_->GetState()(11) * 57.3 * 3600 << "  "
+  //  << pFilter_->GetState()(12) * 100 << "  "
+  //  << pFilter_->GetState()(13) * 100 << "  "
+  //  << pFilter_->GetState()(14) * 100 << std::endl;
 }

@@ -280,11 +280,11 @@ void HPSINS::SetErrModelMatrix() {
 }
 
 void HPSINS::InitialLevelAlignment(const V3d& mean_acce_in_b_fram) {
-  // double pitch = asin(mean_acce_in_b_fram(1) / EarthG0());
-  // double roll = atan2(-mean_acce_in_b_fram(0), mean_acce_in_b_fram(2));
-  // att_ = {pitch, roll, 0};
-  // q_ = Euler2Quaternion(att_);
-  // q_prev_ = q_;
+  double pitch = asin(mean_acce_in_b_fram(1) / EarthG0());
+  double roll = atan2(-mean_acce_in_b_fram(0), mean_acce_in_b_fram(2));
+  att_ = {pitch, roll, 0};
+  q_ = Euler2Quaternion(att_);
+  q_prev_ = q_;
   fb_ = mean_acce_in_b_fram;
   fb_prev_ = mean_acce_in_b_fram;
   SetInitStatus(true);
