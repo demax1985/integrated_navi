@@ -72,6 +72,7 @@ int main(int argc, char** argv) {
 
   V3d att_error = {100.0 * kMin, 100.0 * kMin, 100.0 * kMin};
   V3d vn_error = {0.1, 0.1, 0.1};
+  V3d vn_error1 = {0.1, 0.1, 0.1};
   V3d pos_error = {1.0 / kRe, 1.0 / kRe, 3};
 
   V3d eb = {30.0 * kDph, 30.0 * kDph, 30.0 * kDph};
@@ -104,7 +105,7 @@ int main(int argc, char** argv) {
   Eigen::Matrix<double, 15, 15> pk;
   Eigen::Matrix<double, 15, 15> qt;
   Eigen::Matrix<double, 15, 1> tmppk;
-  tmppk << att_error, vn_error, pos_error, eb, db;
+  tmppk << att_error, vn_error1, pos_error, eb, db;
   pk = tmppk.asDiagonal();
   pk = pk * pk.transpose();
   std::cout << "initial pk is set to : " << std::endl;

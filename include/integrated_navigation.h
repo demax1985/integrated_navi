@@ -28,6 +28,7 @@ class IntegratedNavigation {
 
   // counts
   int initial_alignment_count_;
+  int gnss_fusion_count_;
 
   V3d mean_acce_in_b_fram_;
   V3d mean_gyro_static_;

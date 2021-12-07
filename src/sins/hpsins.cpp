@@ -114,6 +114,7 @@ void HPSINS::Update(const IMUData& imu) {
       imus_.clear();
       imus_.emplace_back(imu);
     }
+    prev_imu_timestamp_ = current_imu_timestamp_;
   }
   if (imus_.size() == num_samples_) {
     update_timestamp_ = imus_.back().Timestamp();
@@ -135,6 +136,7 @@ void HPSINS::Update(const IMUData& imu) {
     UpdatePosition();
     UpdatePrevSINS();
     pre_update_timestamp_ = update_timestamp_;
+    sins_update_count_++;
   }
 }
 
@@ -156,6 +158,7 @@ void HPSINS::UpdateAttitude() {
   Eigen::Quaterniond q_b_ib_middle =
       RotationVector2Quaternion(wib_middle_ * dt_ / 2.0);
   q_middle_ = q_n_in_middle * q_ * q_b_ib_middle;
+  q_middle_.normalize();
   // TODO(demax) : check eulerangle rotation sequence
   // att_ = q_.matrix().eulerAngles(2, 1, 0);
   att_ = Quaternion2Euler(q_);
@@ -289,6 +292,7 @@ void HPSINS::InitialLevelAlignment(const V3d& mean_acce_in_b_fram) {
 
 void HPSINS::FeedbackAttitude(const V3d& phi) {
   q_ = RotationVector2Quaternion(phi) * q_;
+  q_.normalize();
 }
 void HPSINS::FeedbackVelocity(const V3d& dvn) { vn_ -= dvn; }
 void HPSINS::FeedbackPosition(const V3d& dpos) { pos_ -= dpos; }
@@ -304,7 +308,7 @@ double HPSINS::EarthRnh() const { return eth_->Rnh(); }
 double HPSINS::EarthTl() const { return eth_->Tl(); }
 double HPSINS::EarthSl() const { return eth_->Sl(); }
 double HPSINS::EarthCl() const { return eth_->Cl(); }
-double HPSINS::EarthClRnh() const { return eth_->Rnh(); }
+double HPSINS::EarthClRnh() const { return eth_->ClRnh(); }
 double HPSINS::EarthG0() const { return eth_->G0(); }
 
 const M3d& HPSINS::Maa() const { return Maa_; }

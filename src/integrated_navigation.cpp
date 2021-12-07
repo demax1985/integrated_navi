@@ -11,7 +11,8 @@ IntegratedNavigation::IntegratedNavigation()
       zihr_initial_time_(0.0),
       initial_alignment_count_(0),
       kf_predict_dt_(0.0),
-      kf_predict_time_prev_(0.0) {
+      kf_predict_time_prev_(0.0),
+      gnss_fusion_count_(0) {
   mean_acce_in_b_fram_.setZero();
   mean_gyro_static_.setZero();
   imu_sub_ =
@@ -35,6 +36,7 @@ IntegratedNavigation::IntegratedNavigation(std::shared_ptr<SINS> sins,
       initial_alignment_count_(0),
       kf_predict_dt_(0.0),
       kf_predict_time_prev_(0.0),
+      gnss_fusion_count_(0),
       pFilter_(std::move(filter)) {
   mean_acce_in_b_fram_.setZero();
   mean_gyro_static_.setZero();
@@ -87,17 +89,29 @@ void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
   } else {
     pSINS_->Update(imu_);
     kf_predict_dt_ = pSINS_->UpdateTimestamp() - kf_predict_time_prev_;
-    if (kf_predict_dt_ > kKfPredictDt) {
+    if (pSINS_->GetSINSUpdateCount()) {
       pFilter_->Predict(kf_predict_dt_);
-      kf_predict_time_prev_ = pSINS_->UpdateTimestamp();
     }
+    // std::cout << "kf_predict_dt_ is: " << kf_predict_dt_ << std::endl;
+    kf_predict_time_prev_ = pSINS_->UpdateTimestamp();
   }
 }
 void IntegratedNavigation::GnssCallback(
     const sensor_msgs::NavSatFixConstPtr& gnss_pos) {
-  if (!pSINS_->Initialized()) {
+  if (!pSINS_->Initialized() || pSINS_->GetSINSUpdateCount() < 1) {
     return;
   }
+  gnss_fusion_count_++;
+  std::cout << "sins update count is: " << pSINS_->GetSINSUpdateCount()
+            << std::endl;
+  std::cout << "================" << gnss_fusion_count_
+            << "===============" << std::endl;
+  std::cout << "sins att is: " << std::endl;
+  std::cout << pSINS_->GetAttitude() << std::endl;
+  std::cout << "sins vn is: " << std::endl;
+  std::cout << pSINS_->GetVelocity() << std::endl;
+  std::cout << "sins pos is: " << std::endl;
+  std::cout << pSINS_->GetPosition() << std::endl;
   gnss_.gnss_pos_ = {gnss_pos->latitude, gnss_pos->longitude,
                      gnss_pos->altitude};
   double timestamp = gnss_pos->header.stamp.toSec();
@@ -119,33 +133,26 @@ void IntegratedNavigation::GnssCallback(
   //           << std::endl;
   Eigen::MatrixXd Hk;
   Hk.resize(3, state_num);
-
+  Hk.setZero();
   Hk.block<3, 3>(0, pos_index) = Eigen::Matrix3d::Identity();
-  // std::cout << "Hk is: " << Hk << std::endl;
+  std::cout << "Hk is: " << std::endl;
+  std::cout << Hk << std::endl;
+  std::cout << "Rk is: " << std::endl;
+  std::cout << Rk << std::endl;
   // std::cout << "dt of gnss is: " << dt << std::endl;
-  if (dt > 0) {
-    pFilter_->Predict(dt);
-    kf_predict_time_prev_ = timestamp;
-    V3d Zk = pSINS_->GetPosition() - gnss_.gnss_pos_;
-    pFilter_->MeasurementUpdate(Zk, Hk, Rk);
-    // pFilter_->FeedbackAllState();
-    pSINS_->SetPreUpdateTime(timestamp);
-    // pSINS_->UpdatePrevSINS();
-    pFilter_->FeedbackAttitude();
-    pFilter_->FeedbackVelocity();
-    pFilter_->FeedbackPosition();
-  } else {
-    V3d gnss_pos_extrapolated =
-        gnss_.gnss_pos_ - pSINS_->Mpv() * pSINS_->GetVelocity() * dt;
-    V3d Zk = pSINS_->GetPosition() - gnss_pos_extrapolated;
-    pFilter_->MeasurementUpdate(Zk, Hk, Rk);
-    // pFilter_->FeedbackAllState();
-    pSINS_->SetPreUpdateTime(timestamp);
-    // pSINS_->UpdatePrevSINS();
-    pFilter_->FeedbackAttitude();
-    pFilter_->FeedbackVelocity();
-    pFilter_->FeedbackPosition();
-  }
+
+  V3d gnss_pos_extrapolated =
+      gnss_.gnss_pos_ - pSINS_->Mpv() * pSINS_->GetVelocity() * dt;
+  V3d Zk = pSINS_->GetPosition() - gnss_.gnss_pos_;
+  std::cout << " observation is: " << std::endl;
+  std::cout << Zk(0) * 6378137 << "  " << Zk(1) * 6378137 << "  " << Zk(2)
+            << std::endl;
+  pFilter_->MeasurementUpdate(Zk, Hk, Rk);
+
+  pFilter_->FeedbackAttitude();
+  pFilter_->FeedbackVelocity();
+  pFilter_->FeedbackPosition();
+
   outfile_ << pSINS_->GetAttitude()(0) << "  " << pSINS_->GetAttitude()(1)
            << "  " << pSINS_->GetAttitude()(2) << "  "
            << pSINS_->GetVelocity()(0) << "  " << pSINS_->GetVelocity()(1)

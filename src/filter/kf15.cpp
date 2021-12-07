@@ -24,28 +24,38 @@ void KF15::Predict(double dt) {
   SetFk(dt);
   state_ = Fk_ * state_;
   // std::cout << "state after predict is: " << state_ << std::endl;
+  // auto pk = Fk_ * Pk_ * Fk_.transpose() + Qt_ * dt;
+  // Pk_ = pk;
   Pk_ = Fk_ * Pk_ * Fk_.transpose() + Qt_ * dt;
   // std::cout << "Pk after predict is: " << Pk_ << std::endl;
 }
 
 void KF15::MeasurementUpdate(const Eigen::VectorXd Zk, const Eigen::MatrixXd Hk,
                              const Eigen::MatrixXd Rk) {
-  // std::cout << "MeasurementUpdate starts: " << std::endl;
+  std::cout << "MeasurementUpdate starts: " << std::endl;
+  std::cout << "pk is: " << std::endl;
+  std::cout << Pk_ << std::endl;
   auto Pxy = Pk_ * Hk.transpose();
   // std::cout << "Pxy is: " << Pxy << std::endl;
   auto Py0 = Hk * Pxy;
   // std::cout << "Py0 is: " << Py0 << std::endl;
   auto Py = Py0 + Rk;
   // std::cout << "Py is: " << Py << std::endl;
+  std::cout << "kf: before state is: " << std::endl;
+  std::cout << state_ << std::endl;
   auto innovation = Zk - Hk * state_;
-  // std::cout << "innovation is: " << innovation << std::endl;
+  std::cout << "kf: innovation is: " << std::endl;
+  std::cout << innovation(0) * 6378137 << "  " << innovation(1) * 6378137
+            << "  " << innovation(2) << "  " << std::endl;
   auto Kk = Pxy * Py.inverse();
-  // std::cout << "Kk is: " << std::endl << Kk << std::endl;
+  std::cout << "Kk is: " << std::endl << Kk << std::endl;
   state_ += Kk * innovation;
+  // auto pk = Kk * Hk * Pk_;
+  // Pk_ = Pk_ - pk;
   Pk_ -= Kk * Hk * Pk_;
   SetPkPositiveSymmetric();
-  // std::cout << "after measurement update, state is: " << std::endl
-  //           << state_ << std::endl;
+  std::cout << "after measurement update, state is: " << std::endl
+            << state_ << std::endl;
 }
 
 void KF15::SetFk(double dt) {
@@ -107,12 +117,12 @@ void KF15::SetFk(double dt) {
 }
 
 void KF15::SetPkPositiveSymmetric() {
-  for (int i = 0; i < Pk_.rows(); i++)
-    for (int j = 0; j < Pk_.cols(); j++) {
-      if (Pk_(i, j) < 0) {
-        Pk_(i, j) = -Pk_(i, j);
-      }
+  for (int i = 0; i < Pk_.rows(); i++) {
+    if (Pk_(i, i) < 0) {
+      Pk_(i, i) = -Pk_(i, i);
     }
+  }
+
   // TODO(demax): the following code maybe wrong
   Pk_ = (Pk_ + Pk_.transpose()) / 2.0;
   // std::cout << "Pk is: " << std::endl << Pk_ << std::endl;
@@ -134,6 +144,8 @@ void KF15::FeedbackAttitude() {
              state_(static_cast<int>(KfErrorState::kRoll)),
              state_(static_cast<int>(KfErrorState::Kyaw))};
   pSINS_->FeedbackAttitude(phi);
+  std::cout << "feedback att is: " << std::endl;
+  std::cout << phi << std::endl;
   state_(static_cast<int>(KfErrorState::kPitch)) = 0;
   state_(static_cast<int>(KfErrorState::kRoll)) = 0;
   state_(static_cast<int>(KfErrorState::Kyaw)) = 0;
@@ -143,6 +155,8 @@ void KF15::FeedbackVelocity() {
              state_(static_cast<int>(KfErrorState::kVn)),
              state_(static_cast<int>(KfErrorState::kVu))};
   pSINS_->FeedbackVelocity(dvn);
+  std::cout << "feedback dvn is: " << std::endl;
+  std::cout << dvn << std::endl;
   state_(static_cast<int>(KfErrorState::kVe)) = 0;
   state_(static_cast<int>(KfErrorState::kVn)) = 0;
   state_(static_cast<int>(KfErrorState::kVu)) = 0;
@@ -152,6 +166,9 @@ void KF15::FeedbackPosition() {
               state_(static_cast<int>(KfErrorState::kLon)),
               state_(static_cast<int>(KfErrorState::kAlt))};
   pSINS_->FeedbackPosition(dpos);
+  std::cout << "feedback dpos is: " << std::endl;
+  std::cout << dpos(0) * 6378137 << "  " << dpos(1) * 6378137 << "  " << dpos(2)
+            << std::endl;
   state_(static_cast<int>(KfErrorState::kLat)) = 0;
   state_(static_cast<int>(KfErrorState::kLon)) = 0;
   state_(static_cast<int>(KfErrorState::kAlt)) = 0;

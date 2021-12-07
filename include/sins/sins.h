@@ -66,6 +66,7 @@ class SINS {
   void SetPreUpdateTime(double timestamp) { pre_update_timestamp_ = timestamp; }
 
   virtual void UpdatePrevSINS() { return; }
+  int GetSINSUpdateCount() { return sins_update_count_; }
 
  protected:
   bool initialized_;  // if initial alignment is completed
@@ -84,6 +85,7 @@ class SINS {
   // error model coefficient
   M3d Maa_, Mav_, Map_, Mva_, Mvv_, Mvp_, Mpv_, Mpp_;
   double tauG_, tauA_;
+  int sins_update_count_;
 };
 }  // namespace sins
 #endif  // INCLUDE_SINS_SINS_H_

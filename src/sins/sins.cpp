@@ -12,6 +12,7 @@ SINS::SINS()
       prev_imu_timestamp_(0.0),
       tauG_(3600.0),
       tauA_(3600.0),
+      sins_update_count_(0),
       initialized_(false) {
   att_.setZero();
   vn_.setZero();
@@ -48,6 +49,7 @@ SINS::SINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts,
       prev_imu_timestamp_(0.0),
       tauG_(taug),
       tauA_(taua),
+      sins_update_count_(0),
       initialized_(false) {
   q_ = Euler2Quaternion(att_);
   q_prev_ = q_;
