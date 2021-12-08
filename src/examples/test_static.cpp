@@ -91,15 +91,15 @@ int main(int argc, char** argv) {
   V3d ini_pos = pos + pos_error;
   double ts = 0.01;
   double n = 1;  // subsample number
-  double taug = 360000;
-  double taua = 360000;
-  std::shared_ptr<HPSINS> psins(
-      new HPSINS(ini_att, ini_vn, ini_pos, ts, n, taug, taua));
+  double taug = 3600;
+  double taua = 3600;
+  // std::shared_ptr<HPSINS> psins(
+  //     new HPSINS(ini_att, ini_vn, ini_pos, ts, n, taug, taua));
 
-  std::unique_ptr<SINS> psins_pre(new HPSINS(*psins));
-
-  // std::shared_ptr<LPSINS> psins(
-  //     new LPSINS(ini_att, ini_vn, ini_pos, ts, taug, taua));
+  std::shared_ptr<LPSINS> psins(
+      new LPSINS(ini_att, ini_vn, ini_pos, ts, taug, taua));
+  std::unique_ptr<SINS> psins_pre(new LPSINS(*psins));
+  std::cout << "count of psins is: " << psins.use_count() << std::endl;
 
   // set kf
   Eigen::Matrix<double, 15, 15> pk;
@@ -132,6 +132,7 @@ int main(int argc, char** argv) {
   std::unique_ptr<KF15> pkf15(
       new KF15(state, pk, qt, psins, std::move(psins_pre)));
   IntegratedNavigation estimate(psins, std::move(pkf15));
+  std::cout << "count of psins is: " << psins.use_count() << std::endl;
 
   ros::Rate rate(100);
   int cnt = 0;
@@ -152,7 +153,7 @@ int main(int argc, char** argv) {
     // std::cout.precision(10);
     // std::cout << "gnss is: " << gnss << std::endl;
     PublishImuData(gyro, acce);
-    if (100 == cnt++) {
+    if (100 == ++cnt) {
       PublishGnssData(gnss, tmprk);
       //   std::cout << "gnss publish" << std::endl;
       cnt = 0;

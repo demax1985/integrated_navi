@@ -4,11 +4,9 @@ namespace sins {
 
 KF15::KF15(const Eigen::Matrix<double, 15, 1> &state,
            const Eigen::Matrix<double, 15, 15> &P,
-           const Eigen::Matrix<double, 15, 15> &Q, std::shared_ptr<SINS> sins,
-           std::unique_ptr<SINS> sins_pre)
-    : FilterBase(state, P, Q), pSINS_pre_(std::move(sins_pre)) {
-  pSINS_ = sins;
-  // pSINS_pre_ = std::unique_ptr<SINS>(*pSINS_.get());
+           const Eigen::Matrix<double, 15, 15> &Q,
+           const std::shared_ptr<SINS> &sins, std::unique_ptr<SINS> sins_pre)
+    : FilterBase(state, P, Q), pSINS_pre_(std::move(sins_pre)), pSINS_(sins) {
   Eigen::Quaterniond qua;
   qua = pSINS_->GetQuaternion();
   std::cout << "qua of kf15 construct is: " << std::endl;

@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="integrated_navi" type="test_static_node" name="test_static_node1" output="screen">
+  </node>
+</launch>

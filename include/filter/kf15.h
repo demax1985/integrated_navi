@@ -36,8 +36,8 @@ class KF15 : public FilterBase {
   //    Eigen::MatrixXd& Q);
   KF15(const Eigen::Matrix<double, 15, 1> &state,
        const Eigen::Matrix<double, 15, 15> &P,
-       const Eigen::Matrix<double, 15, 15> &Q, std::shared_ptr<SINS> sins,
-       std::unique_ptr<SINS> sins_pre);
+       const Eigen::Matrix<double, 15, 15> &Q,
+       const std::shared_ptr<SINS> &sins, std::unique_ptr<SINS> sins_pre);
   void SetFk(double dt) override;
   void Predict(double dt) override;
   void MeasurementUpdate(const Eigen::VectorXd Zk, const Eigen::MatrixXd Hk,

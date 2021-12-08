@@ -56,7 +56,7 @@ class IntegratedNavigation {
 
  public:
   IntegratedNavigation(/* args */);
-  IntegratedNavigation(std::shared_ptr<SINS> sins,
+  IntegratedNavigation(const std::shared_ptr<SINS>& sins,
                        std::unique_ptr<FilterBase> filter);
   ~IntegratedNavigation() { outfile_.close(); }
 

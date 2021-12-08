@@ -24,7 +24,7 @@ IntegratedNavigation::IntegratedNavigation()
            << std::endl;
 }
 
-IntegratedNavigation::IntegratedNavigation(std::shared_ptr<SINS> sins,
+IntegratedNavigation::IntegratedNavigation(const std::shared_ptr<SINS>& sins,
                                            std::unique_ptr<FilterBase> filter)
     : is_static_(true),
       gnss_vel_valid_(false),
@@ -37,7 +37,8 @@ IntegratedNavigation::IntegratedNavigation(std::shared_ptr<SINS> sins,
       kf_predict_dt_(0.0),
       kf_predict_time_prev_(0.0),
       gnss_fusion_count_(0),
-      pFilter_(std::move(filter)) {
+      pFilter_(std::move(filter)),
+      pSINS_(sins) {
   mean_acce_in_b_fram_.setZero();
   mean_gyro_static_.setZero();
   imu_sub_ =
@@ -47,7 +48,6 @@ IntegratedNavigation::IntegratedNavigation(std::shared_ptr<SINS> sins,
   outfile_.open("result.txt");
   outfile_ << "pitch, roll, yaw, ve, vn, vu, lat, lon, alt, gyrobias, accebias"
            << std::endl;
-  pSINS_ = sins;
   Eigen::Quaterniond qua;
   qua = pSINS_->GetQuaternion();
   std::cout << "qua of integrated navigation construct is: " << std::endl;

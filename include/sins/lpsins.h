@@ -12,6 +12,7 @@ class LPSINS : public SINS {
   LPSINS();
   LPSINS(const V3d& att, const V3d& vel, const V3d& pos, double ts, double taug,
          double taua);
+  LPSINS(const LPSINS& other);
   ~LPSINS() {}
   void Update(const IMUData& imu) override;
   void UpdateAttitude() override;

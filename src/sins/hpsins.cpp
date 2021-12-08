@@ -25,8 +25,9 @@ HPSINS::HPSINS() : SINS() {
 
 HPSINS::HPSINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts,
                const int num_samples, double tauG, double tauA)
-    : SINS(att, vn, pos, ts, tauG, tauA), num_samples_(num_samples) {
-  eth_ = std::unique_ptr<Earth>(new Earth(pos, vn));
+    : SINS(att, vn, pos, ts, tauG, tauA),
+      num_samples_(num_samples),
+      eth_(std::unique_ptr<Earth>(new Earth(pos, vn))) {
   imus_.clear();
   phim_.setZero();
   dvbm_.setZero();

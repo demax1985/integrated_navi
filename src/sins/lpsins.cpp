@@ -18,6 +18,11 @@ LPSINS::LPSINS(const V3d& att, const V3d& vel, const V3d& pos, double ts,
   eth_ = std::unique_ptr<Earth>(new Earth(pos, vel));
 }
 
+LPSINS::LPSINS(const LPSINS& other) : SINS(other) {
+  gn = other.gn;
+  eth_ = std::unique_ptr<Earth>(new Earth(*other.eth_));
+}
+
 void LPSINS::Update(const IMUData& imu) {
   current_imu_timestamp_ = imu.Timestamp();
   update_timestamp_ = current_imu_timestamp_;
@@ -28,16 +33,12 @@ void LPSINS::Update(const IMUData& imu) {
   }
   wib_ = imu.Gyro();
   fb_ = imu.Acce();
-  std::cout << "wib is: " << std::endl;
-  std::cout << wib_ << std::endl;
-  std::cout << "fb is: " << std::endl;
-  std::cout << fb_ << std::endl;
-  std::cout << "dt is: " << dt_ << std::endl;
   UpdateAttitude();
   UpdateVelocity();
   UpdatePosition();
   pre_update_timestamp_ = update_timestamp_;
   vn_prev_ = vn_;
+  sins_update_count_++;
 }
 void LPSINS::UpdateAttitude() {
   Eigen::Quaterniond q_b_ib = RotationVector2Quaternion(wib_ * dt_);
