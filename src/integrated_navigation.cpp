@@ -13,7 +13,10 @@ IntegratedNavigation::IntegratedNavigation()
       kf_predict_dt_(0.0),
       kf_predict_time_prev_(0.0),
       gnss_fusion_count_(0),
-      static_count_(0) {
+      static_count_(0),
+      pFilter_(new sins::KF15()),
+      pSINS_(new sins::LPSINS()),
+      pMotionDetect_(new MotionDetect()) {
   mean_acce_in_b_fram_.setZero();
   mean_gyro_static_.setZero();
   imu_sub_ =
@@ -40,7 +43,8 @@ IntegratedNavigation::IntegratedNavigation(const std::shared_ptr<SINS>& sins,
       gnss_fusion_count_(0),
       static_count_(0),
       pFilter_(std::move(filter)),
-      pSINS_(sins) {
+      pSINS_(sins),
+      pMotionDetect_(new MotionDetect()) {
   mean_acce_in_b_fram_.setZero();
   mean_gyro_static_.setZero();
   imu_sub_ =
@@ -72,6 +76,8 @@ void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
   double timestamp = imu->header.stamp.toSec();
   imu_ = IMUData(gyro, acce, timestamp);
   if (!pSINS_->Initialized()) {
+    pMotionDetect_->Update(imu_);
+    is_static_ = (1 == static_cast<int>(pMotionDetect_->GetMotionStatus()));
     if (is_static_) {
       mean_acce_in_b_fram_ += acce;
       mean_gyro_static_ += gyro;

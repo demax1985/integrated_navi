@@ -13,8 +13,11 @@
 #include <memory>
 
 #include "filter/filter_base.h"
+#include "filter/kf15.h"
+#include "motion_detect.h"
 #include "sensors/gnss.h"
 #include "sensors/imu.h"
+#include "sins/lpsins.h"
 #include "sins/sins.h"
 using sins::SINS;
 enum FusionAlgorithm { kFilter, kFactorGraphOptimization };
@@ -23,6 +26,7 @@ class IntegratedNavigation {
  private:
   std::shared_ptr<SINS> pSINS_;
   std::unique_ptr<FilterBase> pFilter_;
+  std::unique_ptr<MotionDetect> pMotionDetect_;
   // flags
   bool is_static_;
   bool gnss_vel_valid_, gnss_pos_valid_;

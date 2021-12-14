@@ -1,6 +1,7 @@
 #include "motion_detect.h"
 
 MotionDetect::MotionDetect() : motion_status_(kUnknow) {}
+MotionDetect::~MotionDetect() {}
 
 // 判断静止方法：
 // 1，gyro的norm：sqrt(wx(i)*wx(i) + wy(i)*wy(i) + wz(i)*wz(i))

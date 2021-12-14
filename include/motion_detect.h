@@ -46,6 +46,4 @@ class MotionDetect {
   MotionStatus GetMotionStatus() const { return motion_status_; }
 };
 
-MotionDetect::~MotionDetect() {}
-
 #endif
