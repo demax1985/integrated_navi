@@ -147,7 +147,8 @@ set(SOURCE_LIST
    src/common/global.cpp
    src/filter/filter_base.cpp
    src/filter/kf15.cpp
-   src/integrated_navigation.cpp)
+   src/integrated_navigation.cpp
+   src/motion_detect.cpp)
 
 # aux_source_directory(src/examples SOURCE_EXAMPLE)
 # aux_source_directory(src/filter SOURCE_FILTER)

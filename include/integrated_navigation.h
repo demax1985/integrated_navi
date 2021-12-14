@@ -7,6 +7,7 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/NavSatFix.h>
 
+#include <deque>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -29,6 +30,7 @@ class IntegratedNavigation {
   // counts
   int initial_alignment_count_;
   int gnss_fusion_count_;
+  int static_count_;
 
   V3d mean_acce_in_b_fram_;
   V3d mean_gyro_static_;

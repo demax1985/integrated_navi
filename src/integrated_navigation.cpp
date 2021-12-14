@@ -12,7 +12,8 @@ IntegratedNavigation::IntegratedNavigation()
       initial_alignment_count_(0),
       kf_predict_dt_(0.0),
       kf_predict_time_prev_(0.0),
-      gnss_fusion_count_(0) {
+      gnss_fusion_count_(0),
+      static_count_(0) {
   mean_acce_in_b_fram_.setZero();
   mean_gyro_static_.setZero();
   imu_sub_ =
@@ -26,7 +27,7 @@ IntegratedNavigation::IntegratedNavigation()
 
 IntegratedNavigation::IntegratedNavigation(const std::shared_ptr<SINS>& sins,
                                            std::unique_ptr<FilterBase> filter)
-    : is_static_(true),
+    : is_static_(false),
       gnss_vel_valid_(false),
       gnss_pos_valid_(false),
       baro_alt_(0.0),
@@ -37,6 +38,7 @@ IntegratedNavigation::IntegratedNavigation(const std::shared_ptr<SINS>& sins,
       kf_predict_dt_(0.0),
       kf_predict_time_prev_(0.0),
       gnss_fusion_count_(0),
+      static_count_(0),
       pFilter_(std::move(filter)),
       pSINS_(sins) {
   mean_acce_in_b_fram_.setZero();

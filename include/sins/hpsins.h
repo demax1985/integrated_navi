@@ -25,6 +25,11 @@ class HPSINS : public SINS {
   std::vector<IMUData> imus_;
   Eigen::Matrix<double, 5, 5> cone_scull_coeff_;
 
+  void ConeScullCompensation();
+  const V3d Vn2DeltaPos(const V3d& vn, double dt) const;
+  void ComputeWibAndFb();
+  std::tuple<V3d, V3d> ExtrapolatePosAndVn(double dt);
+
  public:
   HPSINS(/* args */);
   HPSINS(const V3d& att, const V3d& vn, const V3d& pos, const double ts,
@@ -59,6 +64,8 @@ class HPSINS : public SINS {
 
   void InitialLevelAlignment(const V3d& mean_acce_in_b_fram) override;
 
+  void UpdatePrevSINS() override;
+
   const V3d& EarthWnin() const;
   const V3d& EarthWnie() const;
   const V3d& EarthWnien() const;
@@ -70,20 +77,6 @@ class HPSINS : public SINS {
   double EarthCl() const;
   double EarthClRnh() const;
   double EarthG0() const;
-
-  void ConeScullCompensation();
-  void UpdatePrevSINS() override;
-  const V3d Vn2DeltaPos(const V3d& vn, double dt) const;
-  void ComputeWibAndFb();
-  std::tuple<V3d, V3d> ExtrapolatePosAndVn(double dt);
-
-  void ShowAtt() const {
-    cout << "euler angle is: " << att_ << endl;
-    cout << " quaternion is: " << q_.w() << " " << q_.x() << " " << q_.y()
-         << " " << q_.z() << endl;
-  }
-  void ShowVel() const { cout << "velocity is: " << vn_ << endl; }
-  void ShowPos() const { cout << "position is: " << pos_ << endl; }
 };
 
 }  // namespace sins

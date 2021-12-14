@@ -50,6 +50,8 @@ class SINS {
 
   virtual void InitialLevelAlignment(const V3d& mean_acce_in_b_fram) = 0;
 
+  virtual void UpdatePrevSINS() { return; }
+
   const V3d& GetAttitude() const { return att_; }
   const V3d& GetVelocity() const { return vn_; }
   const V3d& GetPosition() const { return pos_; }
@@ -65,8 +67,16 @@ class SINS {
   void SetAcceBias(const V3d& accebias) { acce_bias_ = accebias; }
   void SetPreUpdateTime(double timestamp) { pre_update_timestamp_ = timestamp; }
 
-  virtual void UpdatePrevSINS() { return; }
   int GetSINSUpdateCount() { return sins_update_count_; }
+
+  void ShowAtt() const {
+    std::cout << "euler angle is: " << std::endl << att_ << std::endl;
+    std::cout << " quaternion is: " << std::endl
+              << q_.w() << " " << q_.x() << " " << q_.y() << " " << q_.z()
+              << std::endl;
+  }
+  void ShowVel() const { std::cout << "velocity is: " << vn_ << std::endl; }
+  void ShowPos() const { std::cout << "position is: " << pos_ << std::endl; }
 
  protected:
   bool initialized_;  // if initial alignment is completed

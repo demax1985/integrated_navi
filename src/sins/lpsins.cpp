@@ -11,11 +11,11 @@ LPSINS::LPSINS() : SINS() {
   std::cout << "LPSINS construct!" << std::endl;
 }
 
-LPSINS::LPSINS(const V3d& att, const V3d& vel, const V3d& pos, double ts,
+LPSINS::LPSINS(const V3d& att, const V3d& vn, const V3d& pos, double ts,
                double taug, double taua)
-    : SINS(att, vel, pos, ts, taua, taua) {
+    : SINS(att, vn, pos, ts, taua, taua) {
   gn = V3d(0, 0, -9.8017);
-  eth_ = std::unique_ptr<Earth>(new Earth(pos, vel));
+  eth_ = std::unique_ptr<Earth>(new Earth(pos, vn));
 }
 
 LPSINS::LPSINS(const LPSINS& other) : SINS(other) {
@@ -71,14 +71,6 @@ void LPSINS::SetErrModelMatrix() {
   Mpv_(2, 2) = 1.0;
   Mpp_.setZero();
 }
-double LPSINS::EarthRmh() const { return eth_->Rmh(); }
-double LPSINS::EarthRnh() const { return eth_->Rnh(); }
-double LPSINS::EarthClRnh() const { return eth_->Rnh(); }
-const V3d LPSINS::Vn2DeltaPos(const V3d& vn, double dt) const {
-  return V3d(vn(1) * dt / EarthRmh(), vn(0) * dt / EarthClRnh(), vn(2) * dt);
-}
-
-const V3d& LPSINS::EarthGcc() const { return eth_->Gcc(); }
 
 const M3d& LPSINS::Maa() const { return Maa_; }
 const M3d& LPSINS::Mav() const { return Mav_; }
@@ -89,6 +81,9 @@ const M3d& LPSINS::Mvp() const { return Mvp_; }
 const M3d& LPSINS::Mpv() const { return Mpv_; }
 const M3d& LPSINS::Mpp() const { return Mpp_; }
 
+const double LPSINS::TauG() const { return tauG_; }
+const double LPSINS::TauA() const { return tauA_; }
+
 void LPSINS::FeedbackAttitude(const V3d& phi) {
   q_ = RotationVector2Quaternion(phi) * q_;
 }
@@ -97,17 +92,21 @@ void LPSINS::FeedbackPosition(const V3d& dpos) { pos_ -= dpos; }
 void LPSINS::FeedbackGyroBias(const V3d& gyro_bias) { gyro_bias_ += gyro_bias; }
 void LPSINS::FeedbackAcceBias(const V3d& acce_bias) { acce_bias_ += acce_bias; }
 
-const double LPSINS::TauG() const { return tauG_; }
-
-const double LPSINS::TauA() const { return tauA_; }
-
 void LPSINS::InitialLevelAlignment(const V3d& mean_acce_in_b_fram) {
-  // double pitch = asin(mean_acce_in_b_fram(1) / EarthG0());
-  // double roll = atan2(-mean_acce_in_b_fram(0), mean_acce_in_b_fram(2));
-  // att_ = {pitch, roll, 0};
-  // q_ = Euler2Quaternion(att_);
-  // q_prev_ = q_;
+  double pitch = asin(mean_acce_in_b_fram(1) / gn(2));
+  double roll = atan2(-mean_acce_in_b_fram(0), mean_acce_in_b_fram(2));
+  att_ = {pitch, roll, 0};
+  q_ = Euler2Quaternion(att_);
+  q_prev_ = q_;
   fb_ = mean_acce_in_b_fram;
   SetInitStatus(true);
+}
+
+double LPSINS::EarthRmh() const { return eth_->Rmh(); }
+double LPSINS::EarthRnh() const { return eth_->Rnh(); }
+double LPSINS::EarthClRnh() const { return eth_->Rnh(); }
+const V3d& LPSINS::EarthGcc() const { return eth_->Gcc(); }
+const V3d LPSINS::Vn2DeltaPos(const V3d& vn, double dt) const {
+  return V3d(vn(1) * dt / EarthRmh(), vn(0) * dt / EarthClRnh(), vn(2) * dt);
 }
 }  // namespace sins

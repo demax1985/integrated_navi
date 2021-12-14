@@ -2,6 +2,7 @@
 #include <ros/ros.h>
 
 #include <ctime>
+#include <eigen3/Eigen/Geometry>
 #include <memory>
 #include <unsupported/Eigen/MatrixFunctions>
 

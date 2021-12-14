@@ -10,7 +10,7 @@ using std::endl;
 class LPSINS : public SINS {
  public:
   LPSINS();
-  LPSINS(const V3d& att, const V3d& vel, const V3d& pos, double ts, double taug,
+  LPSINS(const V3d& att, const V3d& vn, const V3d& pos, double ts, double taug,
          double taua);
   LPSINS(const LPSINS& other);
   ~LPSINS() {}
@@ -45,19 +45,12 @@ class LPSINS : public SINS {
   double EarthRnh() const;
   double EarthClRnh() const;
   const V3d& EarthGcc() const;
-  const V3d Vn2DeltaPos(const V3d& vn, double dt) const;
-
-  void ShowAtt() const {
-    cout << "euler angle is: " << att_ << endl;
-    cout << " quaternion is: " << q_.w() << " " << q_.x() << " " << q_.y()
-         << " " << q_.z() << endl;
-  }
-  void ShowVel() const { cout << "velocity is: " << vn_ << endl; }
-  void ShowPos() const { cout << "position is: " << pos_ << endl; }
 
  private:
   V3d gn;
   std::unique_ptr<Earth> eth_;
+
+  const V3d Vn2DeltaPos(const V3d& vn, double dt) const;
 };
 }  // namespace sins
 #endif  // INCLUDE_SINS_LPSINS_H_
