@@ -1,6 +1,15 @@
 #include "motion_detect.h"
 
-MotionDetect::MotionDetect() : motion_status_(kUnknow) {
+MotionDetect::MotionDetect()
+    : motion_status_(kUnknow),
+      gyro_norm_(0.0),
+      acce_diff_(0.0),
+      gyro_z_(0.0),
+      acce_y_(0.0) {
+  gyro_std_.setZero();
+  acce_std_.setZero();
+  gyro_mean_.setZero();
+  acce_mean_.setZero();
   outfile_.open("motion_detect.txt");
   outfile_ << "gyro_norm"
            << "  "
