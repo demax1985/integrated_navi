@@ -4,6 +4,8 @@
 #include <Eigen/Core>
 #include <cmath>
 #include <deque>
+#include <fstream>
+#include <iostream>
 
 #include "sensors/imu.h"
 
@@ -12,6 +14,7 @@ using V3d = Eigen::Vector3d;
 class MotionDetect {
  private:
   enum MotionStatus { kUnknow, kStatic, kUniform, kAccelerate, kDecelerate };
+  std::ofstream outfile_;
   // some const values
   // TODO(demax): need to post check the constants
   static const int kImuBuffSize = 100;
@@ -27,8 +30,8 @@ class MotionDetect {
   // some statistics for motion detect
   double gyro_norm_;
   double acce_diff_;
-  double gyro_z2_;
-  double acce_y2_;
+  double gyro_z_;
+  double acce_y_;
   V3d gyro_std_, acce_std_;
 
   V3d gyro_mean_, acce_mean_;

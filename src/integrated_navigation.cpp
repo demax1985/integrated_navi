@@ -75,9 +75,9 @@ void IntegratedNavigation::ImuCallback(const sensor_msgs::ImuConstPtr& imu) {
   acce -= pSINS_->GetAcceBias();
   double timestamp = imu->header.stamp.toSec();
   imu_ = IMUData(gyro, acce, timestamp);
+  pMotionDetect_->Update(imu_);
+  is_static_ = (1 == static_cast<int>(pMotionDetect_->GetMotionStatus()));
   if (!pSINS_->Initialized()) {
-    pMotionDetect_->Update(imu_);
-    is_static_ = (1 == static_cast<int>(pMotionDetect_->GetMotionStatus()));
     if (is_static_) {
       mean_acce_in_b_fram_ += acce;
       mean_gyro_static_ += gyro;
